@@ -1,0 +1,29 @@
+
+!CONFIGURATION: 'com.ti.ccstudio.buildDefinitions.C2000.Debug.1361458142' [Thu Oct 31 22:41:21 CET 2019]
+
+	!TOOL: 'com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.538987443'
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.SILICON_VERSION
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.LARGE_MEMORY_MODEL
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.UNIFIED_MEMORY
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.FLOAT_SUPPORT
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.OPT_LEVEL
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.OPT_FOR_SPEED
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.INCLUDE_PATH
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.ADVICE__PERFORMANCE
+
+	!TOOL: 'com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.linkerDebug.1836698299'
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.OUTPUT_FILE
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.STACK_SIZE
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.LIBRARY
+
