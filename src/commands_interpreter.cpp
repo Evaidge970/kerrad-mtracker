@@ -316,6 +316,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
             if(!hlController.isRunning)
             {
+                hlController.targetPos.th = cmd->th;
                 hlController.isRunning = true;
                 //dodać warunek, co zrobić gdy robot ma nic nie robić (żeby nie zmieniać ciągle na running)
             }
@@ -329,7 +330,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                     //DriveControllerIntegralReset();
                 }
 
-                hlController.SetVelocities(_IQ8toF(cmd->wr), -_IQ8toF(cmd->wl));
+                //hlController.SetVelocities(_IQ8toF(cmd->wr), -_IQ8toF(cmd->wl));
             }
             else
                 drive.regEnable = 0;

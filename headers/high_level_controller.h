@@ -18,6 +18,8 @@ public:
     bool isTriggered;
     bool isRunning; //w trakcie regulacji
 
+    float wr_max, wl_max;
+
     enum Mode {ZERO, VELOCITY, POSITION};
 
     HighLevelController()
@@ -26,6 +28,9 @@ public:
         isTriggered = true;
         isRunning = false;
         error = 0.1;
+
+        wr_max = 1;
+        wl_max = 1;
 	}
 
 
@@ -52,7 +57,7 @@ public:
                 isRunning = false;
                 this->Stop();
             } else {
-                this->SetVelocities(_IQ8toF(-(cmd->wr/2*M_PI)*(odometry.posture.th - targetPos.th))), _IQ8toF((cmd->wl/2*M_PI)*(odometry.posture.th - targetPos.th))));
+                this->SetVelocities(_IQ8toF(-(wr_max/2*M_PI)*(odometry.posture.th - targetPos.th))), _IQ8toF((wl_max/2*M_PI)*(odometry.posture.th - targetPos.th))));
             }
         }
 
