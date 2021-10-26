@@ -1,4 +1,4 @@
-#include "app.h"
+#include "app.h" //zmiana testowa
 
 uint16_t Application::clock1;
 uint32_t Application::time;
