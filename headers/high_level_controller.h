@@ -2,7 +2,9 @@
 
 #include <stdlib.h>
 #include "messages.h"
-
+#include "odometry.h"
+#include "math_routines.h"
+#include "robot.h"
 
 class HighLevelController
 {
@@ -10,8 +12,11 @@ class HighLevelController
 public:
 
     WheelsVelocities wheelsVel;
+    Posture2D targetPos; //zawiera x, y i th
+    float error;
 
     bool isTriggered;
+    bool isRunning; //w trakcie regulacji
 
     enum Mode {ZERO, VELOCITY, POSITION};
 
@@ -19,6 +24,8 @@ public:
 	{
         wheelsVel.leftWheel = wheelsVel.rightWheel = 0;
         isTriggered = true;
+        isRunning = false;
+        error = 0.1;
 	}
 
 
@@ -37,7 +44,19 @@ public:
 
     bool Update()
     {
-        if (isTriggered)
+        //regulacja rotacji
+        if(isRunning)
+        {
+            if(abs(odometry.posture.th - targetPos.th) < error)
+            {
+                isRunning = false;
+                this->Stop();
+            } else {
+                this->SetVelocities(_IQ8toF(-(cmd->wr/2*M_PI)*(odometry.posture.th - targetPos.th))), _IQ8toF((cmd->wl/2*M_PI)*(odometry.posture.th - targetPos.th))));
+            }
+        }
+
+        if (isTriggered) //this will enable updating drive controller velocities
         {
 
             isTriggered = false;

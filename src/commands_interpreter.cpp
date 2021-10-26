@@ -12,7 +12,7 @@ extern "C"
 
 typedef enum
 {
-	NONE, SET_WHEEL_VELOCITY, SET_LEDS, SET_WHEEL_VELOCITY_ODOMETRY, SET_DRV_CONTR_PARAMS, SET_CAR_CONTROLS
+	NONE, SET_WHEEL_VELOCITY, SET_LEDS, SET_WHEEL_VELOCITY_ODOMETRY, SET_DRV_CONTR_PARAMS, SET_CAR_CONTROLS, HIGH_LVL_CONTROL
 } CmdName;
 
 struct CmdSetWheelVel
@@ -298,6 +298,86 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 			InitializeFrameHead(4, 8, outBuf);
 		}
 		break;
+
+		case HIGH_LVL_CONTROL:
+        {
+            CmdWheelVelOdometry * cmd = (CmdWheelVelOdometry *) bufIn;
+
+            volatile CmdWheelVelOdometry cmdTest;
+
+            cmd->status.all = Get16bitDataFromBuf(dataIn);
+            cmd->wl = (int16_t) Get16bitDataFromBuf(dataIn);
+            cmd->wr = (int16_t) Get16bitDataFromBuf(dataIn);
+            cmd->x = GetFloatDataFromBuf(dataIn);
+            cmd->y = GetFloatDataFromBuf(dataIn);
+            cmd->th = GetFloatDataFromBuf(dataIn);
+
+            DINT;
+
+            if(!hlController.isRunning)
+            {
+                hlController.isRunning = true;
+                //dodać warunek, co zrobić gdy robot ma nic nie robić (żeby nie zmieniać ciągle na running)
+            }
+
+            // set velocity?
+            if(cmd->status.bit.drvRegEnable)    // if bit 0 set velocity
+            {
+                if (!drive.regEnable)
+                {
+                    drive.regEnable = 1;
+                    //DriveControllerIntegralReset();
+                }
+
+                hlController.SetVelocities(_IQ8toF(cmd->wr), -_IQ8toF(cmd->wl));
+            }
+            else
+                drive.regEnable = 0;
+
+            // motor amplifiers enable?
+            if(cmd->status.bit.motorEnable)
+            {
+                if (!drive.motorEnable)
+                    drive.EnableOutput();
+                    drive.motorEnable = 1;
+            }
+            else
+            {
+                if (drive.motorEnable)
+                    drive.DisableOutput();
+
+                hlController.SetVelocities(0, 0);
+                drive.motorEnable = 0;
+            }
+            EINT;
+
+            InitializeFrameHead(3, 22, outBuf);
+
+            Store16bitDataInBuf(dataOut, 0);
+            Store16bitDataInBuf(dataOut, (int16) (-_IQ8(drive.wL)));
+            Store16bitDataInBuf(dataOut, (int16) (_IQ8(drive.wR)));
+            StoreFloatDataInBuf(dataOut, odometry.posture.x);
+            StoreFloatDataInBuf(dataOut, odometry.posture.y);
+//            StoreFloatDataInBuf(dataOut, drive.regL.e_phi);
+//            StoreFloatDataInBuf(dataOut, drive.regL.e_w);
+
+            StoreFloatDataInBuf(dataOut, odometry.posture.th);
+            Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regL.u));
+            Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regR.u));
+
+            //Update odometry?
+            if(cmd->status.bit.setOdometry) // if bit 1 set then update odometry
+            {
+                DINT;
+                Posture2D pos;
+                pos.x = cmd->x;
+                pos.y = cmd->y;
+                pos.th = cmd->th;
+                EINT;
+                odometry.Set(pos);
+            }
+        }
+        break;
 
 		default:
 		break;

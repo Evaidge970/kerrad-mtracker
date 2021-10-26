@@ -33,7 +33,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.Texas Instruments XDS100v2 USB Debug Probe_0/C28xx" value="MTrackerFirmware"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:MTrackerFirmware}"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.D:\praca\projekty\MTracker\firmware\TMS320F28335.ccxml.Texas Instruments XDS100v1 USB Debug Probe_0/C28xx" value="D:/praca\projekty\MTracker\firmware\Debug\MTrackerFirmware.out"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.TMS320F28335.ccxml.Texas Instruments XDS100v1 USB Debug Probe_0/C28xx" value="E:/prywatne\projekty\mtracker\firmware\mtracker\Debug\MTrackerFirmware.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.TMS320F28335.ccxml.Texas Instruments XDS100v1 USB Debug Probe_0/C28xx" value="C:\Dev\kerrad-mtracker\Debug\MTrackerFirmware.out"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS100v1 USB Emulator_0/C28xx" value="E:/prywatne\projekty\mtracker\firmware\mtracker\Debug\MTrackerFirmware.out"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS100v2 USB Debug Probe_0/C28xx" value="E:/prywatne\projekty\mtracker\firmware\mtracker\Debug\MTrackerFirmware.out"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
