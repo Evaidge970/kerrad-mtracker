@@ -5,6 +5,9 @@
 #include "odometry.h"
 #include "math_routines.h"
 #include "robot.h"
+//#include "global_data.h"
+
+extern Odometry odometry;
 
 class HighLevelController
 {
@@ -57,7 +60,7 @@ public:
                 isRunning = false;
                 this->Stop();
             } else {
-                this->SetVelocities(_IQ8toF(-(wr_max/2*M_PI)*(odometry.posture.th - targetPos.th))), _IQ8toF((wl_max/2*M_PI)*(odometry.posture.th - targetPos.th))));
+                this->SetVelocities(-(wr_max/2*M_PI)*(odometry.posture.th - targetPos.th), (wl_max/2*M_PI)*(odometry.posture.th - targetPos.th));
             }
         }
 
