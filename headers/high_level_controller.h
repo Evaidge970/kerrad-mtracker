@@ -32,8 +32,8 @@ public:
         isRunning = false;
         error = 0.1;
 
-        wr_max = 1;
-        wl_max = 1;
+        wr_max = 5;
+        wl_max = 5;
 	}
 
 
