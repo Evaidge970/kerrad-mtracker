@@ -172,6 +172,16 @@ void setOdometry(float x, float y, float theta)
     prepareFrame(MODE_SET_ODOMETRY | MODE_MOTORS_ON, CMD_SET_WHEELS_AND_ODOM);
 }
 
+void setTarget(float x, float y, float theta) // nowa funkcja 
+{
+    tx_frame.x = x;
+    tx_frame.y = y;
+    tx_frame.theta = theta;
+
+    prepareFrame(MODE_SET_ODOMETRY | MODE_MOTORS_ON, CMD_HIGH_LVL_CONTROL);
+}
+
+
 void setVelocity(float w_r, float w_l)
 {
    w_l = saturateVelocity(w_l);
@@ -366,6 +376,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 				}
 
 			break;
+            
+            case HLControl:
+                initFrame();
+				//setVelocity((float)matrixData[0], (float)matrixData[1]);
+				plhs[0] = mxCreateNumericMatrix(1,26, mxUINT8_CLASS, mxREAL);
+				setTarget(0,0,5);
+				com.Send((uint8_t *)&tx_frame, 26);
+		        
+				outputData = (uint8_t*)mxGetData(plhs[0]);
+				for(int i = 0; i < 26; i++)
+				{
+					uint8_t ch = ((uint8_t *)&tx_frame)[i];
+					outputData[i] = ch;
+				}
+            break;
              
 			default:
 			break;

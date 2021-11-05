@@ -76,7 +76,12 @@
 						</tool>
 					</fileInfo>
 					<fileInfo id="com.ti.ccstudio.buildDefinitions.C2000.Debug.1361458142.sys_src/DSP2833x_SWPrioritizedDefaultIsr.c" name="DSP2833x_SWPrioritizedDefaultIsr.c" rcbsApplicability="disable" resourcePath="sys_src/DSP2833x_SWPrioritizedDefaultIsr.c" toolsToInvoke="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096.543668398">
-						<tool id="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096.543668398" name="C2000 Compiler" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096"/>
+						<tool id="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096.543668398" name="C2000 Compiler" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096">
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__C_SRCS.744269336" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__C_SRCS"/>
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__CPP_SRCS.744429279" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__CPP_SRCS"/>
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM_SRCS.1970262990" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM_SRCS"/>
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM2_SRCS.430227566" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM2_SRCS"/>
+						</tool>
 						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.41106673.309056573.1378639659.1085989181.1743981673.646894703.1302654080.1310012019.2050777057.2100936755.1192561027.212339041.1754880214.290595560.491586011.1932268128.1006016404.1173821694.796723743.1652961869.2062084362" name="Resource Custom Build Step">
 							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.843342187.81376686.1130677427.1884086386.1077331848.1085548221.989579577.1336729433.389439175.329876777.1990505719.726343745.2049540773.879093602.1085987315.662629724.1163829324.1553707966.932716934.446000316.930303790" name="Resource Custom Build Step Input Type">
 								<additionalInput kind="additionalinputdependency" paths=""/>
@@ -85,7 +90,12 @@
 						</tool>
 					</fileInfo>
 					<fileInfo id="com.ti.ccstudio.buildDefinitions.C2000.Debug.1361458142.sys_src/DSP2833x_SWPrioritizedPieVect.c" name="DSP2833x_SWPrioritizedPieVect.c" rcbsApplicability="disable" resourcePath="sys_src/DSP2833x_SWPrioritizedPieVect.c" toolsToInvoke="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096.1675472205">
-						<tool id="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096.1675472205" name="C2000 Compiler" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096"/>
+						<tool id="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096.1675472205" name="C2000 Compiler" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.exe.compilerDebug.1872814096">
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__C_SRCS.752233390" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__C_SRCS"/>
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__CPP_SRCS.1185152228" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__CPP_SRCS"/>
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM_SRCS.1535181091" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM_SRCS"/>
+							<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM2_SRCS.519846678" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.12.compiler.inputType__ASM2_SRCS"/>
+						</tool>
 						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.1808712479.1093423102.509550625.1394545839.1274079331.1996214766.823780437.174832206.677983874.583708417.540610075.487044153.226601342.1191292265.1373562179.649639485.933298393.787377340.1071393580.1858552032.1223954581" name="Resource Custom Build Step">
 							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.1539912978.2049643526.358997974.381243639.1974480075.966075042.72079548.1357288736.80161539.155140218.154177641.728517801.2131743002.1576181628.1482090710.154470814.12883676.441765846.1131328461.1948731863.925865766" name="Resource Custom Build Step Input Type">
 								<additionalInput kind="additionalinputdependency" paths=""/>
@@ -94,7 +104,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="configs/F28335_RAM.cmd|28335_RAM_lnk.cmd|sys_src/DSP2833x_SWPrioritizedDefaultIsr.c|sys_src/DSP2833x_SWPrioritizedPieVect.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="MTrackerDriver-Matlab|configs/F28335_RAM.cmd|28335_RAM_lnk.cmd|sys_src/DSP2833x_SWPrioritizedDefaultIsr.c|sys_src/DSP2833x_SWPrioritizedPieVect.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
