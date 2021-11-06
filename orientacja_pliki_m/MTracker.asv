@@ -52,7 +52,7 @@ while (tau < Tf)
             
     % Communication with the robot
     % MTrackerDriver('sendVelocity', wd_i); 
-    MTrackerDriver('highLevelControl',[0.0; 0.0; 5.0]); %edytowane
+    MTrackerDriver('setTarget',[0.0; 0.0; 5.0]); %edytowane
     wait(tau, Ts);
     data = MTrackerDriver('read');
     

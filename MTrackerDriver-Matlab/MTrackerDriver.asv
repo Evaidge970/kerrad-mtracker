@@ -379,7 +379,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             
             case HLControl:
                 initFrame();
-				setTarget((float)matrixData[0], (float)matrixData[1], (float)matrixData[2]); //pobiera dane wyslane z pliku .m
+				//setVelocity((float)matrixData[0], (float)matrixData[1]);
+                setTarget(0,0,5);
 				plhs[0] = mxCreateNumericMatrix(1,26, mxUINT8_CLASS, mxREAL);
 				
 				com.Send((uint8_t *)&tx_frame, 26);
