@@ -3,7 +3,7 @@
 % (c) KSIS, D. Pazderski 2015
 %*************************************************************************
 
-if (MTrackerDriver('open', [3, 921600]) == -1) % by³o 115200
+if (MTrackerDriver('open', [4, 921600]) == -1) % by³o 115200
     return;
 end
 
@@ -52,7 +52,11 @@ while (tau < Tf)
             
     % Communication with the robot
     % MTrackerDriver('sendVelocity', wd_i); 
-    MTrackerDriver('highLevelControl',[0.0; 0.0; 5.0]); %edytowane
+    if(tau < 5)
+        MTrackerDriver('highLevelControl',[0.0; 0.0; 5.0]);
+    else
+        MTrackerDriver('highLevelControl',[0.0; 0.0; 1.0]);
+    end
     wait(tau, Ts);
     data = MTrackerDriver('read');
     
@@ -73,7 +77,7 @@ while (tau < Tf)
     
     qe(:,i) = qe_i;
 end    
-
+MTrackerDriver('sendVelocity', [0;0]);
 MTrackerDriver('close');
 
 % Adjust buffers

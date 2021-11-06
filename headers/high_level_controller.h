@@ -30,10 +30,10 @@ public:
         wheelsVel.leftWheel = wheelsVel.rightWheel = 0;
         isTriggered = true;
         isRunning = false;
-        error = 0.1;
+        error = 0.01;
 
-        wr_max = 5;
-        wl_max = 5;
+        wr_max = 1;
+        wl_max = 1;
 	}
 
 
@@ -55,12 +55,14 @@ public:
         //regulacja rotacji
         if(isRunning)
         {
+            //this->SetVelocities(1,1);
             if(abs(odometry.posture.th - targetPos.th) < error)
             {
                 isRunning = false;
                 this->Stop();
             } else {
-                this->SetVelocities(-(wr_max/2*M_PI)*(odometry.posture.th - targetPos.th), (wl_max/2*M_PI)*(odometry.posture.th - targetPos.th));
+                //this->SetVelocities(-(wr_max/2*M_PI)*(odometry.posture.th - targetPos.th), (wl_max/2*M_PI)*(odometry.posture.th - targetPos.th));
+                this->SetVelocities(-wr_max,wl_max);
             }
         }
 
