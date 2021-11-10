@@ -3,7 +3,7 @@
 % (c) KSIS, D. Pazderski 2015
 %*************************************************************************
 
-if (MTrackerDriver('open', [4, 921600]) == -1) % by³o 115200
+if (MTrackerDriver('open', [3, 921600]) == -1) % by³o 115200
     return;
 end
 
@@ -28,7 +28,7 @@ qe = zeros(3,n);
 
 % Initial localization
 q_i = [0; 0; 0];
-w_i = [0.03;0.03];
+w_i = [0;0];
 
 i = 0; tau = 0;
 tic;
@@ -52,11 +52,13 @@ while (tau < Tf)
             
     % Communication with the robot
     % MTrackerDriver('sendVelocity', wd_i); 
-    if(tau < 5)
-        MTrackerDriver('highLevelControl',[0.0; 0.0; 5.0]);
-    else
-        MTrackerDriver('highLevelControl',[0.0; 0.0; 1.0]);
-    end
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 1.0]);
+    %if(tau < 5)
+    %MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0]);
+    %elseif (tau < 10)
+    %MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0]);
+   % MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0]);
+    %end
     wait(tau, Ts);
     data = MTrackerDriver('read');
     
@@ -77,7 +79,7 @@ while (tau < Tf)
     
     qe(:,i) = qe_i;
 end    
-MTrackerDriver('sendVelocity', [0;0]);
+%MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0])
 MTrackerDriver('close');
 
 % Adjust buffers

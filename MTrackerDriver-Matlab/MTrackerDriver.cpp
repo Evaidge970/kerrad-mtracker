@@ -178,7 +178,7 @@ void setTarget(float x, float y, float theta) // nowa funkcja
     tx_frame.y = y;
     tx_frame.theta = theta;
 
-    prepareFrame(MODE_SET_ODOMETRY | MODE_MOTORS_ON, CMD_HIGH_LVL_CONTROL);
+    prepareFrame(MODE_MOTORS_ON, CMD_HIGH_LVL_CONTROL);
 }
 
 

@@ -321,6 +321,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 //dodać warunek, co zrobić gdy robot ma nic nie robić (żeby nie zmieniać ciągle na running)
             }
 
+
+
             // set velocity?
             if(cmd->status.bit.drvRegEnable)    // if bit 0 set velocity
             {
@@ -359,6 +361,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             Store16bitDataInBuf(dataOut, (int16) (_IQ8(drive.wR)));
             StoreFloatDataInBuf(dataOut, odometry.posture.x);
             StoreFloatDataInBuf(dataOut, odometry.posture.y);
+            ////StoreFloatDataInBuf(dataOut, hlController.targetPos.th);
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_phi);
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_w);
 

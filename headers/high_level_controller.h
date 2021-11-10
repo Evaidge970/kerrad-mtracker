@@ -30,7 +30,8 @@ public:
         wheelsVel.leftWheel = wheelsVel.rightWheel = 0;
         isTriggered = true;
         isRunning = false;
-        error = 0.01;
+        //isRunning = true;
+        error = 0.2;
 
         wr_max = 1;
         wl_max = 1;
@@ -61,8 +62,8 @@ public:
                 isRunning = false;
                 this->Stop();
             } else {
-                //this->SetVelocities(-(wr_max/2*M_PI)*(odometry.posture.th - targetPos.th), (wl_max/2*M_PI)*(odometry.posture.th - targetPos.th));
-                this->SetVelocities(-wr_max,wl_max);
+               // this->SetVelocities(-(wr_max/(2*M_PI))*(targetPos.th - odometry.posture.th), -(wl_max/(2*M_PI))*(targetPos.th - odometry.posture.th));
+                this->SetVelocities(-wr_max,-wl_max);
             }
         }
 
