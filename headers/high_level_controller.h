@@ -23,7 +23,10 @@ public:
 
     float wr_max, wl_max;
 
-    enum Mode {ZERO, VELOCITY, POSITION};
+    enum ModeEnum {ZERO, VELOCITY, POSITION, ORIENTATION}; //tryby HLC
+    enum SettingEnum {TWO_STEP, P, PI, PID, TEST}; //typy regulatora
+    ModeEnum Mode;
+    SettingEnum Setting;
 
     HighLevelController()
 	{
@@ -32,6 +35,8 @@ public:
         isRunning = false;
         //isRunning = true;
         error = 0.2;
+        Mode = ORIENTATION;
+        Setting = TEST;
 
         wr_max = 1;
         wl_max = 1;
@@ -53,19 +58,22 @@ public:
 
     bool Update()
     {
-        //regulacja rotacji
-        if(isRunning)
+        if(Mode == ORIENTATION && Setting == TEST)
         {
-            //this->SetVelocities(1,1);
-            if(abs(odometry.posture.th - targetPos.th) < error)
+            if(isRunning)
             {
-                isRunning = false;
-                this->Stop();
-            } else {
-               // this->SetVelocities(-(wr_max/(2*M_PI))*(targetPos.th - odometry.posture.th), -(wl_max/(2*M_PI))*(targetPos.th - odometry.posture.th));
-                this->SetVelocities(-wr_max,-wl_max);
+                //this->SetVelocities(1,1);
+                if(abs(odometry.posture.th - targetPos.th) < error)
+                {
+                    isRunning = false;
+                    this->Stop();
+                } else {
+                   // this->SetVelocities(-(wr_max/(2*M_PI))*(targetPos.th - odometry.posture.th), -(wl_max/(2*M_PI))*(targetPos.th - odometry.posture.th));
+                    this->SetVelocities(-wr_max,-wl_max);
+                }
             }
         }
+
 
         if (isTriggered) //this will enable updating drive controller velocities
         {

@@ -89,6 +89,26 @@ struct CmdDriveCntrParams
 	int16_t kc2;
 };
 
+struct CmdHLControl
+{
+    union
+    {
+        unsigned int all;
+        struct
+        {
+            uint16_t drvRegEnable : 1;
+            uint16_t motorEnable : 1;
+            uint16_t setOdometry : 1;
+            uint16_t res : 13;
+        } bit;
+    }  status;
+    int16_t wl;
+    int16_t wr;
+    float x;
+    float y;
+    float th;
+};
+
 void InitializeFrameHead(uint16_t c, uint16_t s, uint16_t * outBuf)
 {
 	outBuf[0] = s + 4;	//size
@@ -301,9 +321,11 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
 		case HIGH_LVL_CONTROL:
         {
-            CmdWheelVelOdometry * cmd = (CmdWheelVelOdometry *) bufIn;
+            CmdHLControl * cmd = (CmdHLControl *) bufIn;
+            CmdHLControl * cmd_last;
 
-            volatile CmdWheelVelOdometry cmdTest;
+
+            //volatile CmdHLControl cmdTest;
 
             cmd->status.all = Get16bitDataFromBuf(dataIn);
             cmd->wl = (int16_t) Get16bitDataFromBuf(dataIn);
@@ -316,9 +338,11 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
             if(!hlController.isRunning)
             {
-                hlController.targetPos.th = cmd->th;
-                hlController.isRunning = true;
-                //dodać warunek, co zrobić gdy robot ma nic nie robić (żeby nie zmieniać ciągle na running)
+                if(cmd != cmd_last) //komenda musi być inna niż poprzednia żeby rozpocząć regulację
+                {
+                    hlController.targetPos.th = cmd->th;
+                    hlController.isRunning = true;
+                }
             }
 
 
@@ -353,6 +377,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 drive.motorEnable = 0;
             }
             EINT;
+
+            cmd_last = cmd; //zapisuje ostatnią ramkę w cmd_last
 
             InitializeFrameHead(3, 22, outBuf);
 
