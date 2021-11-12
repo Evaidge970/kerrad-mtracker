@@ -7,7 +7,7 @@ if (MTrackerDriver('open', [3, 921600]) == -1) % by³o 115200
     return;
 end
 
-Tf = 10;
+Tf = 20;
 Ts = 0.03;
 
 n = floor(Tf/Ts)+1;
@@ -52,7 +52,13 @@ while (tau < Tf)
             
     % Communication with the robot
     % MTrackerDriver('sendVelocity', wd_i); 
+    if(tau < 1)
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 3.0]);
+    elseif (tau <10)
     MTrackerDriver('highLevelControl',[0.0; 0.0; 1.0]);
+    else
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 0.5]);
+    end
     %if(tau < 5)
     %MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0]);
     %elseif (tau < 10)

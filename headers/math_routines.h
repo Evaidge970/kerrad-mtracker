@@ -10,6 +10,13 @@ inline float sign(float f)
     return (f < 0) ? -1 : 1;
 }
 
+inline float abs_float(float a)
+{
+    if(a<0)
+        return -a;
+    return a;
+}
+
 inline float AngleLocalCorrection(float th)
 {
 	if (th >= M_PI)
