@@ -83,7 +83,7 @@ public:
         {
             if(isRunning)
             {
-                if(abs_float(odometry.posture.th - targetPos.th) < error)
+                if(abs_float(odometry.posture.x - targetPos.x) < 10*error && abs_float(odometry.posture.y - targetPos.y) < 10*error)
                 {
                     isRunning = false;
                     this->Stop();
