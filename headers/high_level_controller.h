@@ -22,6 +22,7 @@ public:
     bool isRunning; //w trakcie regulacji
 
     float wr_max, wl_max;
+    float ex, ey, v, w, k, d, D; //do regulacji polozenia
 
     enum ModeEnum {ZERO, VELOCITY, POSITION, ORIENTATION}; //tryby HLC
     enum SettingEnum {TWO_STEP, P, PI, PID, TEST}; //typy regulatora
@@ -39,7 +40,7 @@ public:
         Mode = ORIENTATION;
         Setting = TEST;
 
-
+        k=0.2; d=0.1; D=0.15;
 
         wr_max = 2;
         wl_max = 2;
@@ -76,6 +77,26 @@ public:
                    //this->SetVelocities((wr_max/(2*M_PI))*(targetPos.th - odometry.posture.th), (wl_max/(2*M_PI))*(targetPos.th - odometry.posture.th));
                    this->SetVelocities(-wr_max*sign(odometry.posture.th - targetPos.th),-wl_max*sign(odometry.posture.th - targetPos.th));
                 }
+            }
+        }
+        if(Mode == POSITION && Setting == TEST)
+        {
+            if(isRunning)
+            {
+                if(abs_float(odometry.posture.th - targetPos.th) < error)
+                {
+                    isRunning = false;
+                    this->Stop();
+                }
+            } else {
+                //regulacja polozenia
+
+                ex = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
+                ey = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
+                v = -k*(cos(odometry.posture.th)*ex + sin(odometry.posture.th)*ey);
+                w = -k*(-sin(odometry.posture.th)*ex/d + cos(odometry.posture.th)*ey/d);
+
+                this->SetVelocities(v+0.5*D*w, v-0.5*D*w);
             }
         }
 
