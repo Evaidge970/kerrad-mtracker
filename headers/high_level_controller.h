@@ -22,7 +22,7 @@ public:
     bool isRunning; //w trakcie regulacji
 
     float wr_max, wl_max;
-    float ex, ey, v, w, k, d, D; //do regulacji polozenia
+    float ex, ey, v, w, k, d, D,r; //do regulacji polozenia
 
     enum ModeEnum {ZERO, VELOCITY, POSITION, ORIENTATION}; //tryby HLC
     enum SettingEnum {TWO_STEP, P, PI, PID, TEST}; //typy regulatora
@@ -36,11 +36,12 @@ public:
         isTriggered = true;
         isRunning = false;
         //isRunning = true;
-        error = 0.05;
-        Mode = ORIENTATION;
+        error = 0.01;
+        Mode = POSITION;
         Setting = TEST;
 
-        k=0.2; d=0.1; D=0.15;
+        //k=0.2; d=0.1; D=0.145, r =0.025;
+        k=0.2; d=0.1;
 
         wr_max = 2;
         wl_max = 2;
@@ -49,9 +50,17 @@ public:
 
     void SetVelocities(float wr, float wl)
     {
+        if(abs_float(wr)<25.0 && abs_float(wl)<25.0)
+        {
         wheelsVel.rightWheel = wr;
         wheelsVel.leftWheel = wl;
         isTriggered = true;
+        }
+        else
+        {
+            wheelsVel.rightWheel = 25.0;
+            wheelsVel.leftWheel = 25.0;
+        }
     }
 
     void Stop()
@@ -83,20 +92,22 @@ public:
         {
             if(isRunning)
             {
-                if(abs_float(odometry.posture.x - targetPos.x) < 10*error && abs_float(odometry.posture.y - targetPos.y) < 10*error)
+                if(abs_float(odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x) < error && abs_float(odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y) < error)
                 {
                     isRunning = false;
                     this->Stop();
                 }
-            } else {
-                //regulacja polozenia
+                else {
+                                //regulacja polozenia
 
-                ex = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
-                ey = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
-                v = -k*(cos(odometry.posture.th)*ex + sin(odometry.posture.th)*ey);
-                w = -k*(-sin(odometry.posture.th)*ex/d + cos(odometry.posture.th)*ey/d);
+                                ex = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
+                                ey = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
+                                v = -k*(cos(odometry.posture.th)*ex + sin(odometry.posture.th)*ey);
+                                w = -k*(-sin(odometry.posture.th)*ex/d + cos(odometry.posture.th)*ey/d);
 
-                this->SetVelocities(v+0.5*D*w, v-0.5*D*w);
+                                this->SetVelocities((v+0.5*WHEEL_BASE*w)/WHEEL_RADIUS, -(v-0.5*WHEEL_BASE*w)/WHEEL_RADIUS);   //pamiêtaj o minusie przy lewym kole
+
+                            }
             }
         }
 

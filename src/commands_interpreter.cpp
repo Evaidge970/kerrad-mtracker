@@ -340,7 +340,9 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 if(cmd != cmd_last) //komenda musi być inna niż poprzednia żeby rozpocząć regulację
                 {
-                    hlController.targetPos.th = cmd->th;
+                   // hlController.targetPos.th = cmd->th;
+                    hlController.targetPos.x = cmd->x;
+                    hlController.targetPos.y = cmd->y;
                     hlController.isRunning = true;
                 }
             }
