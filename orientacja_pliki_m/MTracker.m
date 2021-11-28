@@ -7,9 +7,9 @@ if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
     return;
 end
 
-Tf = 20;
+Tf = 2;
 Ts = 0.03;
-
+d=0.1;
 n = floor(Tf/Ts)+1;
 
 % Initialization of buffers to store data
@@ -87,6 +87,14 @@ while (tau < Tf)
 end    
 %MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0; 1])
 MTrackerDriver('close');
+q_z = ones(3,n);
+for i=1:n
+    q_z(1,i) = q(1,i)+d*cos(q(3,i));
+    q_z(2,i) = q(2,i)+d*sin(q(3,i));
+    q_z(3,i) = q(3,i);
+end
+    
+    
 
 % Adjust buffers
 t = t(:, 1:i);
