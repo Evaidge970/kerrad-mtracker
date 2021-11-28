@@ -99,7 +99,8 @@ struct CmdHLControl
             uint16_t drvRegEnable : 1;
             uint16_t motorEnable : 1;
             uint16_t setOdometry : 1;
-            uint16_t res : 13;
+            uint16_t requestData : 1;
+            uint16_t res : 12;
         } bit;
     }  status;
     int16_t wl;
@@ -345,7 +346,10 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 }
             }
 
-
+            if(cmd->status.bit.requestData) //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
+            {
+                
+            }
 
             // set velocity?
             if(cmd->status.bit.drvRegEnable)    // if bit 0 set velocity

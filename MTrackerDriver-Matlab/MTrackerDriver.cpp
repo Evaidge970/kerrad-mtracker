@@ -17,9 +17,10 @@
 
 
 
-#define MODE_MOTORS_OFF    0x00 //000
-#define MODE_MOTORS_ON     0x03 //011
-#define MODE_SET_ODOMETRY  0x04 //100
+#define MODE_MOTORS_OFF    0x00 //0000
+#define MODE_MOTORS_ON     0x03 //0011
+#define MODE_SET_ODOMETRY  0x04 //0100
+#define MODE_REQUEST_DATA  0x08 //1000
 
 
 typedef enum MatlabCmd {NoneCmd, OpenCmd, CloseCmd, SetVelCmd, SetOdomCmd, ReadDataCmd, SetFreeWheelsCmd, HLControl}; // HLControl
@@ -172,7 +173,7 @@ void setOdometry(float x, float y, float theta)
     prepareFrame(MODE_SET_ODOMETRY | MODE_MOTORS_ON, CMD_SET_WHEELS_AND_ODOM);
 }
 
-void setTarget(float x, float y, float theta) // nowa funkcja 
+void setTarget(float x, float y, float theta) // nowa funkcja - ustaw cel
 {
     tx_frame.x = x;
     tx_frame.y = y;
@@ -181,6 +182,14 @@ void setTarget(float x, float y, float theta) // nowa funkcja
     prepareFrame(MODE_MOTORS_ON, CMD_HIGH_LVL_CONTROL);
 }
 
+void requestData() // wysyla puste zapytania, zeby robot wyslal aktualna pozycje
+{
+    tx_frame.x = 0.0;
+    tx_frame.y = 0.0;
+    tx_frame.theta = 0.0;
+
+    prepareFrame(MODE_MOTORS_ON | MODE_REQUEST_DATA, CMD_HIGH_LVL_CONTROL);
+}
 
 void setVelocity(float w_r, float w_l)
 {
@@ -379,17 +388,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             
             case HLControl:
                 initFrame();
-				setTarget((float)matrixData[0], (float)matrixData[1], (float)matrixData[2]); //pobiera dane wyslane z pliku .m
-				plhs[0] = mxCreateNumericMatrix(1,26, mxUINT8_CLASS, mxREAL);
+
+                if((bool)matrixData[3]) //jesli chcemy wyslac zadana wartosc
+                {
+                    setTarget((float)matrixData[0], (float)matrixData[1], (float)matrixData[2]); //pobiera dane wyslane z pliku .m
+                }
+                else //jesli wysylamy pusta ramke (chcemy tylko odczytac dane z robota)
+                {
+                    requestData();
+                }
+                plhs[0] = mxCreateNumericMatrix(1,26, mxUINT8_CLASS, mxREAL);
+                    
+                com.Send((uint8_t *)&tx_frame, 26);
+                    
+                outputData = (uint8_t*)mxGetData(plhs[0]);
+                for(int i = 0; i < 26; i++)
+                {
+                    uint8_t ch = ((uint8_t *)&tx_frame)[i];
+                    outputData[i] = ch;
+                }
 				
-				com.Send((uint8_t *)&tx_frame, 26);
-		        
-				outputData = (uint8_t*)mxGetData(plhs[0]);
-				for(int i = 0; i < 26; i++)
-				{
-					uint8_t ch = ((uint8_t *)&tx_frame)[i];
-					outputData[i] = ch;
-				}
             break;
              
 			default:

@@ -3,7 +3,7 @@
 % (c) KSIS, D. Pazderski 2015
 %*************************************************************************
 
-if (MTrackerDriver('open', [3, 921600]) == -1) % by³o 115200
+if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
     return;
 end
 
@@ -53,17 +53,17 @@ while (tau < Tf)
     % Communication with the robot
     % MTrackerDriver('sendVelocity', wd_i); 
     if(tau < 1)
-    MTrackerDriver('highLevelControl',[0.0; 0.0; 3.0]);
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 3.0; 1]); //x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
     elseif (tau <10)
-    MTrackerDriver('highLevelControl',[0.0; 0.0; 1.0]);
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 1.0; 1]);
     else
-    MTrackerDriver('highLevelControl',[0.0; 0.0; 0.5]);
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 0.5; 1]);
     end
     %if(tau < 5)
-    %MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0]);
+    %MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 1]);
     %elseif (tau < 10)
-    %MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0]);
-   % MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0]);
+    %MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0; 1]);
+   % MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0; 1]);
     %end
     wait(tau, Ts);
     data = MTrackerDriver('read');
@@ -85,7 +85,7 @@ while (tau < Tf)
     
     qe(:,i) = qe_i;
 end    
-%MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0])
+%MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0; 1])
 MTrackerDriver('close');
 
 % Adjust buffers
