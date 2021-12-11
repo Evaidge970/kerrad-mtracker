@@ -322,11 +322,22 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
 		case HIGH_LVL_CONTROL:
         {
+            static int cmd_buffor_size = 3;
             CmdHLControl * cmd = (CmdHLControl *) bufIn;
-            CmdHLControl * cmd_last;
+            //CmdHLControl * cmd_last;
+            CmdHLControl * cmd_buffor[cmd_buffor_size]; //kolejka
 
-
-            //volatile CmdHLControl cmdTest;
+            //pusta komenda do wypelnienia kolejki
+            CmdHLControl * cmd_null;
+            cmd_null->status.bit.drvRegEnable = 0;
+            cmd_null->status.bit.motorEnable = 0;
+            cmd_null->status.bit.requestData = 1;
+            cmd_null->status.bit.setOdometry = 0;
+            cmd_null->wl = 0;
+            cmd_null->wr = 0;
+            cmd_null->x = 0;
+            cmd_null->y = 0;
+            cmd_null->th = 0;
 
             cmd->status.all = Get16bitDataFromBuf(dataIn);
             cmd->wl = (int16_t) Get16bitDataFromBuf(dataIn);
@@ -337,38 +348,48 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
             DINT;
 
-            if(!hlController.isRunning)
+            if(!cmd->status.bit.requestData) //jesli nowy rozkaz
             {
-                if(cmd != cmd_last) //komenda musi być inna niż poprzednia żeby rozpocząć regulację
+                if(!hlController.isRunning)
                 {
-                   // hlController.targetPos.th = cmd->th;
-                    hlController.targetPos.x = cmd->x;
-                    hlController.targetPos.y = cmd->y;
-                    hlController.isRunning = true;
+                    cmd_buffor[0] = cmd; //przypisanie aktualnej komendy do kolejki
                 }
+                else //nowy rozkaz na koniec kolejki
+                {
+                    for(int i=0; i<cmd_buffor_size; i++) //pierwsza znaleziona pusta komenda w kolejce zostanie zapelniona
+                    {
+                        if(cmd_buffor[i] == cmd_null)
+                        {
+                            cmd_buffor[i] = cmd;
+                            break; //end for loop
+                        }
+                    }
+                }
+                hlController.targetPos.th = cmd_buffor[0]->th;
+                hlController.targetPos.x = cmd_buffor[0]->x;
+                hlController.targetPos.y = cmd_buffor[0]->y;
+                hlController.isRunning = true;
             }
-
-            if(cmd->status.bit.requestData) //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
+            else //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
             {
                 
             }
 
+            //wykonuj pierwszy rozkaz z kolejki
             // set velocity?
-            if(cmd->status.bit.drvRegEnable)    // if bit 0 set velocity
+            if(cmd_buffor[0]->status.bit.drvRegEnable)    // if bit 0 set velocity
             {
                 if (!drive.regEnable)
                 {
                     drive.regEnable = 1;
                     //DriveControllerIntegralReset();
                 }
-
-                //hlController.SetVelocities(_IQ8toF(cmd->wr), -_IQ8toF(cmd->wl));
             }
             else
                 drive.regEnable = 0;
 
             // motor amplifiers enable?
-            if(cmd->status.bit.motorEnable)
+            if(cmd_buffor[0]->status.bit.motorEnable)
             {
                 if (!drive.motorEnable)
                     drive.EnableOutput();
@@ -382,9 +403,25 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 hlController.SetVelocities(0, 0);
                 drive.motorEnable = 0;
             }
+
+            //przesuwanie kolejki
+            if(!hlController.isRunning)
+            {
+                for(int i=0; i<cmd_buffor_size-1; i++)
+                {
+                    cmd_buffor[i] = cmd_buffor[i+1];
+                }
+                cmd_buffor[cmd_buffor_size-1] = cmd_null;
+
+                hlController.targetPos.th = cmd_buffor[0]->th;
+                hlController.targetPos.x = cmd_buffor[0]->x;
+                hlController.targetPos.y = cmd_buffor[0]->y;
+                hlController.isRunning = true;
+            }
+
             EINT;
 
-            cmd_last = cmd; //zapisuje ostatnią ramkę w cmd_last
+            //cmd_last = cmd; //zapisuje ostatnią ramkę w cmd_last
 
             InitializeFrameHead(3, 22, outBuf);
 
