@@ -119,12 +119,25 @@ void InitializeFrameHead(uint16_t c, uint16_t s, uint16_t * outBuf)
 	outBuf[4] = 0;	// robot number
 }
 
+CmdHLControl * cmd_buffor[3]; //kolejka
+
+void InitHLBuffer()
+{
+    uint16_t bufInNull0[64];
+    uint16_t bufInNull1[64];
+    uint16_t bufInNull2[64];
+    cmd_buffor[0] = (CmdHLControl*)bufInNull0[64];
+    cmd_buffor[1] = (CmdHLControl*)bufInNull1[64];
+    cmd_buffor[2] = (CmdHLControl*)bufInNull2[64];
+}
+
 void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik na bufor odbiornika
 {
 	uint16_t * dataIn;
 	uint16_t * dataOut;
 
 	uint16_t bufIn[64];
+	uint16_t bufInN[64];
 
    	dataIn = inBuf + 5;
 	dataOut = outBuf + 5;
@@ -322,13 +335,13 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
 		case HIGH_LVL_CONTROL:
         {
-            static int cmd_buffor_size = 3;
+
             CmdHLControl * cmd = (CmdHLControl *) bufIn;
             //CmdHLControl * cmd_last;
-            CmdHLControl * cmd_buffor[cmd_buffor_size]; //kolejka
+
 
             //pusta komenda do wypelnienia kolejki
-            CmdHLControl * cmd_null;
+            CmdHLControl * cmd_null = (CmdHLControl *) bufInN;
             cmd_null->status.bit.drvRegEnable = 0;
             cmd_null->status.bit.motorEnable = 0;
             cmd_null->status.bit.requestData = 1;
@@ -356,7 +369,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 }
                 else //nowy rozkaz na koniec kolejki
                 {
-                    for(int i=0; i<cmd_buffor_size; i++) //pierwsza znaleziona pusta komenda w kolejce zostanie zapelniona
+                    for(int i=0; i<3; i++) //pierwsza znaleziona pusta komenda w kolejce zostanie zapelniona
                     {
                         if(cmd_buffor[i] == cmd_null)
                         {
@@ -407,11 +420,11 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             //przesuwanie kolejki
             if(!hlController.isRunning)
             {
-                for(int i=0; i<cmd_buffor_size-1; i++)
+                for(int i=0; i<3-1; i++)
                 {
                     cmd_buffor[i] = cmd_buffor[i+1];
                 }
-                cmd_buffor[cmd_buffor_size-1] = cmd_null;
+                cmd_buffor[3-1] = cmd_null;
 
                 hlController.targetPos.th = cmd_buffor[0]->th;
                 hlController.targetPos.x = cmd_buffor[0]->x;

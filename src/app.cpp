@@ -9,7 +9,7 @@ void Application::Run()
 {
 
 	EINT;
-
+	InitHLBuffer();
 	for(;;)
 	{
 		DINT;
