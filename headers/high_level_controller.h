@@ -63,6 +63,37 @@ public:
         }
     }
 
+    void SetMode(unsigned int modeChoice)
+    {
+        switch(modeChoice)
+        {
+            case 0:
+            {
+                Mode = ORIENTATION;
+                Setting = TEST;
+            }
+            break;
+            case 1:
+            {
+                Mode = POSITION;
+                Setting = TEST;
+            }
+            break;
+            case 2:
+            {
+                Mode = POSITION; //tymczasowo
+                Setting = PID;
+            }
+            break;
+            case 3:
+            {
+                Mode = POSITION; //tymczasowo
+                Setting = PI;
+            }
+            break;
+        }
+    }
+
     void Stop()
     {
         wheelsVel.leftWheel = 0;

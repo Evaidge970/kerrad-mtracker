@@ -38,6 +38,10 @@ data = MTrackerDriver('read');
 tic;
 disp('Robot is started.');
 % Main control loop
+%MTrackerDriver('highLevelControl',[x; y; th; czy zadac nowy punkt; czy wyczyscic bufor kolejki; tryb])
+%czy zadac nowy punkt: 0 - pusta ramka, odczyt; 1 - wyslanie nowego rozkazu
+%czy wyczyscic bufor kolejki: 0 - dodac rozkaz do kolejki; 1 - przerwac wykonanie zadania i wykonac od razu wyslany rozkaz
+%tryb: 0 - orientacja; 1 - pozycja; 2 - algorytm XYZ; 3 - algorytm ABC
 MTrackerDriver('highLevelControl',[1.5; -1.5; 0.0; 1]); 
 while (tau < Tf)
     

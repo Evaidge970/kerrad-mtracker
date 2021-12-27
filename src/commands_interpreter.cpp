@@ -100,7 +100,9 @@ struct CmdHLControl
             uint16_t motorEnable : 1;
             uint16_t setOdometry : 1;
             uint16_t requestData : 1;
-            uint16_t res : 12;
+            uint16_t clearBuffor : 1;
+            uint16_t modeChoice : 2;
+            uint16_t res : 9;
         } bit;
     }  status;
     int16_t wl;
@@ -129,6 +131,9 @@ void InitHLBuffer()
     cmd_buffor[0] = (CmdHLControl*)bufInNull0[64];
     cmd_buffor[1] = (CmdHLControl*)bufInNull1[64];
     cmd_buffor[2] = (CmdHLControl*)bufInNull2[64];
+    cmd_buffor[0]->status.bit.requestData = 1;
+    cmd_buffor[1]->status.bit.requestData = 1;
+    cmd_buffor[2]->status.bit.requestData = 1;
 }
 
 void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik na bufor odbiornika
@@ -346,6 +351,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             cmd_null->status.bit.motorEnable = 0;
             cmd_null->status.bit.requestData = 1;
             cmd_null->status.bit.setOdometry = 0;
+            cmd_null->status.bit.clearBuffor = 0;
+            cmd_null->status.bit.modeChoice = 0;
             cmd_null->wl = 0;
             cmd_null->wr = 0;
             cmd_null->x = 0;
@@ -363,7 +370,13 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
             if(!cmd->status.bit.requestData) //jesli nowy rozkaz
             {
-                if(!hlController.isRunning)
+                if(cmd->status.bit.clearBuffor) //jesli nowy rozkaz czysci kolejke i przerywa aktualne zadanie
+                {
+                    cmd_buffor[0] = cmd;
+                    cmd_buffor[1] = cmd_null;
+                    cmd_buffor[2] = cmd_null;
+                }
+                else if(!hlController.isRunning)
                 {
                     cmd_buffor[0] = cmd; //przypisanie aktualnej komendy do kolejki
                 }
@@ -387,6 +400,9 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 
             }
+
+            //ustaw tryb HLControllera przed wykonaniem zadania
+            hlController.SetMode((unsigned int)cmd_buffor[0]->status.bit.modeChoice);
 
             //wykonuj pierwszy rozkaz z kolejki
             // set velocity?

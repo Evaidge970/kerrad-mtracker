@@ -17,10 +17,16 @@
 
 
 
-#define MODE_MOTORS_OFF    0x00 //0000
-#define MODE_MOTORS_ON     0x03 //0011
-#define MODE_SET_ODOMETRY  0x04 //0100
-#define MODE_REQUEST_DATA  0x08 //1000
+#define MODE_MOTORS_OFF    0x00 //0000000
+#define MODE_MOTORS_ON     0x03 //0000011
+#define MODE_SET_ODOMETRY  0x04 //0000100
+#define MODE_REQUEST_DATA  0x08 //0001000
+#define MODE_CLEAR_BUFFOR  0x16 //0010000
+
+#define MODE_ORIENTATION   0x00 //0000000
+#define MODE_POSITION      0x32 //0100000
+#define MODE_ALGORITHM3    0x64 //1000000
+#define MDOE_ALGORITHM4    0x96 //1100000
 
 
 typedef enum MatlabCmd {NoneCmd, OpenCmd, CloseCmd, SetVelCmd, SetOdomCmd, ReadDataCmd, SetFreeWheelsCmd, HLControl}; // HLControl
@@ -173,13 +179,21 @@ void setOdometry(float x, float y, float theta)
     prepareFrame(MODE_SET_ODOMETRY | MODE_MOTORS_ON, CMD_SET_WHEELS_AND_ODOM);
 }
 
-void setTarget(float x, float y, float theta) // nowa funkcja - ustaw cel
+void setTarget(float x, float y, float theta, bool clearBuffor, int modeChoice) // nowa funkcja - ustaw cel
 {
+    uint16_t mode = 0; //pusty tryb
     tx_frame.x = x;
     tx_frame.y = y;
     tx_frame.theta = theta;
 
-    prepareFrame(MODE_MOTORS_ON, CMD_HIGH_LVL_CONTROL);
+    mode = mode | MODE_MOTORS_ON;
+    if(clearBuffor) mode = mode | MODE_CLEAR_BUFFOR;
+    if(modeChoice == 0) mode = mode | MODE_ORIENTATION;
+    else if(modeChoice == 1) mode = mode | MODE_POSITION;
+    else if(modeChoice == 2) mode = mode | MODE_ALGORITHM3;
+    else if(modeChoice == 3) mode = mode | MODE_ALGORITHM4;
+
+    prepareFrame(mode, CMD_HIGH_LVL_CONTROL);
 }
 
 void requestData() // wysyla puste zapytania, zeby robot wyslal aktualna pozycje
@@ -391,7 +405,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
                 if((bool)matrixData[3]) //jesli chcemy wyslac zadana wartosc
                 {
-                    setTarget((float)matrixData[0], (float)matrixData[1], (float)matrixData[2]); //pobiera dane wyslane z pliku .m
+                    setTarget((float)matrixData[0], (float)matrixData[1], (float)matrixData[2], (bool)matrixData[4], (int)matrixData[5]); //pobiera dane wyslane z pliku .m
                 }
                 else //jesli wysylamy pusta ramke (chcemy tylko odczytac dane z robota)
                 {
