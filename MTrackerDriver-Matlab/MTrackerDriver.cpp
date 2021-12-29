@@ -26,7 +26,7 @@
 #define MODE_ORIENTATION   0x00 //0000000
 #define MODE_POSITION      0x32 //0100000
 #define MODE_ALGORITHM3    0x64 //1000000
-#define MDOE_ALGORITHM4    0x96 //1100000
+#define MODE_ALGORITHM4    0x96 //1100000
 
 
 typedef enum MatlabCmd {NoneCmd, OpenCmd, CloseCmd, SetVelCmd, SetOdomCmd, ReadDataCmd, SetFreeWheelsCmd, HLControl}; // HLControl

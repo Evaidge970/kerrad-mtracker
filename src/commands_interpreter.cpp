@@ -456,14 +456,15 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
             Store16bitDataInBuf(dataOut, 0);
             Store16bitDataInBuf(dataOut, (int16) (-_IQ8(drive.wL)));
+
             Store16bitDataInBuf(dataOut, (int16) (_IQ8(drive.wR)));
             StoreFloatDataInBuf(dataOut, odometry.posture.x);
             StoreFloatDataInBuf(dataOut, odometry.posture.y);
-            ////StoreFloatDataInBuf(dataOut, hlController.targetPos.th);
+
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_phi);
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_w);
-
-            StoreFloatDataInBuf(dataOut, odometry.posture.th);
+            StoreFloatDataInBuf(dataOut, (int16) cmd->status.all);
+            //StoreFloatDataInBuf(dataOut, odometry.posture.th);
             Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regL.u));
             Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regR.u));
 
