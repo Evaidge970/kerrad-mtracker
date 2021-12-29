@@ -134,6 +134,13 @@ void InitHLBuffer()
     cmd_buffor[0]->status.bit.requestData = 1;
     cmd_buffor[1]->status.bit.requestData = 1;
     cmd_buffor[2]->status.bit.requestData = 1;
+    cmd_buffor[0]->status.bit.drvRegEnable = 1;
+    cmd_buffor[1]->status.bit.drvRegEnable = 1;
+    cmd_buffor[2]->status.bit.drvRegEnable = 1;
+    cmd_buffor[0]->status.bit.motorEnable = 1;
+    cmd_buffor[1]->status.bit.motorEnable = 1;
+    cmd_buffor[2]->status.bit.motorEnable = 1;
+
 }
 
 void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik na bufor odbiornika
@@ -347,8 +354,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
             //pusta komenda do wypelnienia kolejki
             CmdHLControl * cmd_null = (CmdHLControl *) bufInN;
-            cmd_null->status.bit.drvRegEnable = 0;
-            cmd_null->status.bit.motorEnable = 0;
+            cmd_null->status.bit.drvRegEnable = 1;
+            cmd_null->status.bit.motorEnable = 1;
             cmd_null->status.bit.requestData = 1;
             cmd_null->status.bit.setOdometry = 0;
             cmd_null->status.bit.clearBuffor = 0;
