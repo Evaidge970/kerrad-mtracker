@@ -4,6 +4,7 @@
 #include "high_level_controller.h"
 #include "serial_communication.h"
 #include "odometry.h"
+#include "hardware_interface.h"
 
 extern "C"
 {
@@ -112,6 +113,29 @@ struct CmdHLControl
     float th;
 };
 
+/*
+void CmdMemCopy(CmdHLControl* cmdSource, CmdHLControl* cmdDestination)
+{
+    MemCopy(cmdSource->status.all, cmdSource->wl, cmdDestination->status.all);
+    MemCopy(cmdSource->wl, cmdSource->wr, cmdDestination->wl);
+    MemCopy(cmdSource->wr, cmdSource->x, cmdDestination->wr);
+    MemCopy(cmdSource->x, cmdSource->x+16, cmdDestination->x);
+    MemCopy(cmdSource->x+16, cmdSource->y, cmdDestination->x+16);
+    MemCopy(cmdSource->y, cmdSource->y+16, cmdDestination->y);
+    MemCopy(cmdSource->y+16, cmdSource->th, cmdDestination->y+16);
+    MemCopy(cmdSource->th, cmdSource->th+16, cmdDestination->th);
+    MemCopy(cmdSource->th+16, cmdSource->th+32, cmdDestination->th+16);
+}
+*/
+
+void CmdMemCopy(CmdHLControl* cmdSource, CmdHLControl* cmdDestination)
+{
+    while(cmdSource < cmdSource+64*sizeof(uint16_t))
+    {
+        *cmdDestination++ = *cmdSource++;
+    }
+}
+
 void InitializeFrameHead(uint16_t c, uint16_t s, uint16_t * outBuf)
 {
 	outBuf[0] = s + 4;	//size
@@ -128,9 +152,9 @@ void InitHLBuffer()
     uint16_t bufInNull0[64];
     uint16_t bufInNull1[64];
     uint16_t bufInNull2[64];
-    cmd_buffor[0] = (CmdHLControl*)bufInNull0[64];
-    cmd_buffor[1] = (CmdHLControl*)bufInNull1[64];
-    cmd_buffor[2] = (CmdHLControl*)bufInNull2[64];
+    cmd_buffor[0] = (CmdHLControl*)bufInNull0;
+    cmd_buffor[1] = (CmdHLControl*)bufInNull1;
+    cmd_buffor[2] = (CmdHLControl*)bufInNull2;
     cmd_buffor[0]->status.bit.requestData = 1;
     cmd_buffor[1]->status.bit.requestData = 1;
     cmd_buffor[2]->status.bit.requestData = 1;
@@ -379,21 +403,26 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 if(cmd->status.bit.clearBuffor) //jesli nowy rozkaz czysci kolejke i przerywa aktualne zadanie
                 {
-                    cmd_buffor[0] = cmd;
+                    /*cmd_buffor[0] = cmd;
                     cmd_buffor[1] = cmd_null;
-                    cmd_buffor[2] = cmd_null;
+                    cmd_buffor[2] = cmd_null;*/
+                    CmdMemCopy(cmd, cmd_buffor[0]);
+                    CmdMemCopy(cmd_null, cmd_buffor[1]);
+                    CmdMemCopy(cmd_null, cmd_buffor[2]);
                 }
                 else if(!hlController.isRunning)
                 {
-                    cmd_buffor[0] = cmd; //przypisanie aktualnej komendy do kolejki
+                    //cmd_buffor[0] = cmd; //przypisanie aktualnej komendy do kolejki
+                    CmdMemCopy(cmd, cmd_buffor[0]);
                 }
                 else //nowy rozkaz na koniec kolejki
                 {
                     for(int i=0; i<3; i++) //pierwsza znaleziona pusta komenda w kolejce zostanie zapelniona
                     {
-                        if(cmd_buffor[i] == cmd_null)
+                        if(&cmd_buffor[i] == &cmd_null)
                         {
-                            cmd_buffor[i] = cmd;
+                            //cmd_buffor[i] = cmd;
+                            CmdMemCopy(cmd, cmd_buffor[i]);
                             break; //end for loop
                         }
                     }
@@ -445,9 +474,11 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 for(int i=0; i<3-1; i++)
                 {
-                    cmd_buffor[i] = cmd_buffor[i+1];
+                    //cmd_buffor[i] = cmd_buffor[i+1];
+                    CmdMemCopy(cmd_buffor[i+1], cmd_buffor[i]);
                 }
-                cmd_buffor[3-1] = cmd_null;
+                //cmd_buffor[3-1] = cmd_null;
+                CmdMemCopy(cmd_null, cmd_buffor[2]);
 
                 hlController.targetPos.th = cmd_buffor[0]->th;
                 hlController.targetPos.x = cmd_buffor[0]->x;
