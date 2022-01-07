@@ -511,11 +511,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 hlController.targetPos.x = cmd_buffor[0].x;
                 hlController.targetPos.y = cmd_buffor[0].y;
                 hlController.isRunning = true;
-<<<<<<< HEAD
                 //ustaw tryb HLControllera przed wykonaniem zadania
-=======
-		//ustaw tryb HLControllera przed wykonaniem zadania
->>>>>>> 4565f4f3a379dbb400f2ea715b03484e66571232
                 hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
             }
 
