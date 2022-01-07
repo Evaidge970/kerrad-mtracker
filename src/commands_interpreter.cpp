@@ -145,11 +145,12 @@ void InitializeFrameHead(uint16_t c, uint16_t s, uint16_t * outBuf)
 	outBuf[4] = 0;	// robot number
 }
 
-CmdHLControl * cmd_buffor[3]; //kolejka
+//CmdHLControl * cmd_buffor[3]; //kolejka
+CmdHLControl cmd_buffor[3]; //kolejka (nie wskaznik!)
 
 void InitHLBuffer()
 {
-    uint16_t bufInNull0[64];
+    /*uint16_t bufInNull0[64];
     uint16_t bufInNull1[64];
     uint16_t bufInNull2[64];
     cmd_buffor[0] = (CmdHLControl*)bufInNull0;
@@ -163,7 +164,15 @@ void InitHLBuffer()
     cmd_buffor[2]->status.bit.drvRegEnable = 1;
     cmd_buffor[0]->status.bit.motorEnable = 1;
     cmd_buffor[1]->status.bit.motorEnable = 1;
-    cmd_buffor[2]->status.bit.motorEnable = 1;
+    cmd_buffor[2]->status.bit.motorEnable = 1;*/
+
+    for(int i=0; i<3; i++)
+    {
+        cmd_buffor[i].status.bit.requestData = 1;
+        cmd_buffor[i].status.bit.drvRegEnable = 1;
+        cmd_buffor[i].status.bit.motorEnable = 1;
+    }
+
 
 }
 
@@ -375,7 +384,6 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             CmdHLControl * cmd = (CmdHLControl *) bufIn;
             //CmdHLControl * cmd_last;
 
-
             //pusta komenda do wypelnienia kolejki
             CmdHLControl * cmd_null = (CmdHLControl *) bufInN;
             cmd_null->status.bit.drvRegEnable = 1;
@@ -403,33 +411,29 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 if(cmd->status.bit.clearBuffor) //jesli nowy rozkaz czysci kolejke i przerywa aktualne zadanie
                 {
-                    /*cmd_buffor[0] = cmd;
-                    cmd_buffor[1] = cmd_null;
-                    cmd_buffor[2] = cmd_null;*/
-                    CmdMemCopy(cmd, cmd_buffor[0]);
-                    CmdMemCopy(cmd_null, cmd_buffor[1]);
-                    CmdMemCopy(cmd_null, cmd_buffor[2]);
+                    cmd_buffor[0] = *cmd;
+                    cmd_buffor[1] = *cmd_null;
+                    cmd_buffor[2] = *cmd_null;
                 }
                 else if(!hlController.isRunning)
                 {
-                    //cmd_buffor[0] = cmd; //przypisanie aktualnej komendy do kolejki
-                    CmdMemCopy(cmd, cmd_buffor[0]);
+                    cmd_buffor[0] = *cmd; //przypisanie aktualnej komendy do kolejki
                 }
                 else //nowy rozkaz na koniec kolejki
                 {
                     for(int i=0; i<3; i++) //pierwsza znaleziona pusta komenda w kolejce zostanie zapelniona
                     {
-                        if(&cmd_buffor[i] == &cmd_null)
+                        //if(cmd_buffor[i] == *cmd_null)
+                        if(cmd_buffor[i].status.all == 11 && cmd_buffor[i].x == 0 && cmd_buffor[i].y == 0 && cmd_buffor[i].th == 0 && cmd_buffor[i].wl == 0 && cmd_buffor[i].wr == 0) //status 11 to cmd_null
                         {
-                            //cmd_buffor[i] = cmd;
-                            CmdMemCopy(cmd, cmd_buffor[i]);
+                            cmd_buffor[i] = *cmd;
                             break; //end for loop
                         }
                     }
                 }
-                hlController.targetPos.th = cmd_buffor[0]->th;
-                hlController.targetPos.x = cmd_buffor[0]->x;
-                hlController.targetPos.y = cmd_buffor[0]->y;
+                hlController.targetPos.th = cmd_buffor[0].th;
+                hlController.targetPos.x = cmd_buffor[0].x;
+                hlController.targetPos.y = cmd_buffor[0].y;
                 hlController.isRunning = true;
             }
             else //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
@@ -438,11 +442,11 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             }
 
             //ustaw tryb HLControllera przed wykonaniem zadania
-            hlController.SetMode((unsigned int)cmd_buffor[0]->status.bit.modeChoice);
+            hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
 
             //wykonuj pierwszy rozkaz z kolejki
             // set velocity?
-            if(cmd_buffor[0]->status.bit.drvRegEnable)    // if bit 0 set velocity
+            if(cmd_buffor[0].status.bit.drvRegEnable)    // if bit 0 set velocity
             {
                 if (!drive.regEnable)
                 {
@@ -454,7 +458,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 drive.regEnable = 0;
 
             // motor amplifiers enable?
-            if(cmd_buffor[0]->status.bit.motorEnable)
+            if(cmd_buffor[0].status.bit.motorEnable)
             {
                 if (!drive.motorEnable)
                     drive.EnableOutput();
@@ -474,15 +478,13 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 for(int i=0; i<3-1; i++)
                 {
-                    //cmd_buffor[i] = cmd_buffor[i+1];
-                    CmdMemCopy(cmd_buffor[i+1], cmd_buffor[i]);
+                    cmd_buffor[i] = cmd_buffor[i+1];
                 }
-                //cmd_buffor[3-1] = cmd_null;
-                CmdMemCopy(cmd_null, cmd_buffor[2]);
+                cmd_buffor[3-1] = *cmd_null;
 
-                hlController.targetPos.th = cmd_buffor[0]->th;
-                hlController.targetPos.x = cmd_buffor[0]->x;
-                hlController.targetPos.y = cmd_buffor[0]->y;
+                hlController.targetPos.th = cmd_buffor[0].th;
+                hlController.targetPos.x = cmd_buffor[0].x;
+                hlController.targetPos.y = cmd_buffor[0].y;
                 hlController.isRunning = true;
             }
 
