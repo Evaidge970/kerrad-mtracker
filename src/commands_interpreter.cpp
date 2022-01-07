@@ -176,6 +176,25 @@ void InitHLBuffer()
 
 }
 
+void AddToBuffor(CmdHLControl& cmd_buffor, CmdHLControl* cmd) //Add cmd to buffor
+{
+    cmd_buffor.status.all = cmd->status.all;
+    cmd_buffor.wl = cmd->wl;
+    cmd_buffor.wr = cmd->wr;
+    cmd_buffor.x = cmd->x;
+    cmd_buffor.y = cmd->y;
+    cmd_buffor.th = cmd->th;
+}
+
+bool IsCmdNull(CmdHLControl& cmd) //Check if given cmd is cmd_null
+{
+    if(cmd.status.all == 11 && cmd.x == 0 && cmd.y == 0 && cmd.th == 0 && cmd.wl == 0 && cmd.wr == 0)
+        {
+            return true;
+        }
+    return false;
+}
+
 void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik na bufor odbiornika
 {
 	uint16_t * dataIn;
@@ -411,22 +430,27 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 if(cmd->status.bit.clearBuffor) //jesli nowy rozkaz czysci kolejke i przerywa aktualne zadanie
                 {
-                    cmd_buffor[0] = *cmd;
-                    cmd_buffor[1] = *cmd_null;
-                    cmd_buffor[2] = *cmd_null;
+                    //cmd_buffor[0] = *cmd;
+                    //cmd_buffor[1] = *cmd_null;
+                    //cmd_buffor[2] = *cmd_null;
+                    AddToBuffor(cmd_buffor[0], cmd);
+                    AddToBuffor(cmd_buffor[1], cmd_null);
+                    AddToBuffor(cmd_buffor[2], cmd_null);
                 }
                 else if(!hlController.isRunning)
                 {
-                    cmd_buffor[0] = *cmd; //przypisanie aktualnej komendy do kolejki
+                    //cmd_buffor[0] = *cmd;
+                    AddToBuffor(cmd_buffor[0], cmd);
                 }
                 else //nowy rozkaz na koniec kolejki
                 {
                     for(int i=0; i<3; i++) //pierwsza znaleziona pusta komenda w kolejce zostanie zapelniona
                     {
                         //if(cmd_buffor[i] == *cmd_null)
-                        if(cmd_buffor[i].status.all == 11 && cmd_buffor[i].x == 0 && cmd_buffor[i].y == 0 && cmd_buffor[i].th == 0 && cmd_buffor[i].wl == 0 && cmd_buffor[i].wr == 0) //status 11 to cmd_null
+                        if(IsCmdNull(cmd_buffor[i]))
                         {
-                            cmd_buffor[i] = *cmd;
+                            //cmd_buffor[i] = *cmd;
+                            AddToBuffor(cmd_buffor[i], cmd);
                             break; //end for loop
                         }
                     }
@@ -435,14 +459,14 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 hlController.targetPos.x = cmd_buffor[0].x;
                 hlController.targetPos.y = cmd_buffor[0].y;
                 hlController.isRunning = true;
+                //ustaw tryb HLControllera przed wykonaniem zadania
+                hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
             }
             else //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
             {
                 
             }
 
-            //ustaw tryb HLControllera przed wykonaniem zadania
-            hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
 
             //wykonuj pierwszy rozkaz z kolejki
             // set velocity?
@@ -480,12 +504,15 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 {
                     cmd_buffor[i] = cmd_buffor[i+1];
                 }
-                cmd_buffor[3-1] = *cmd_null;
+                //cmd_buffor[3-1] = *cmd_null;
+                AddToBuffor(cmd_buffor[3-1], cmd_null);
 
                 hlController.targetPos.th = cmd_buffor[0].th;
                 hlController.targetPos.x = cmd_buffor[0].x;
                 hlController.targetPos.y = cmd_buffor[0].y;
                 hlController.isRunning = true;
+                //ustaw tryb HLControllera przed wykonaniem zadania
+                hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
             }
 
             EINT;
@@ -503,7 +530,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_phi);
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_w);
-            StoreFloatDataInBuf(dataOut, (int16) cmd->status.all);
+            StoreFloatDataInBuf(dataOut, (int16) cmd_buffor[0].status.all);
             //StoreFloatDataInBuf(dataOut, odometry.posture.th);
             Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regL.u));
             Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regR.u));
