@@ -168,6 +168,12 @@ void InitHLBuffer()
 
     for(int i=0; i<3; i++)
     {
+	cmd_buffor[i].status.all = 0;
+	cmd_buffor[i].wl = 0;
+	cmd_buffor[i].wr = 0;
+	cmd_buffor[i].x = 0;
+	cmd_buffor[i].y = 0;
+	cmd_buffor[i].th = 0;
         cmd_buffor[i].status.bit.requestData = 1;
         cmd_buffor[i].status.bit.drvRegEnable = 1;
         cmd_buffor[i].status.bit.motorEnable = 1;
@@ -411,6 +417,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             cmd_null->status.bit.setOdometry = 0;
             cmd_null->status.bit.clearBuffor = 0;
             cmd_null->status.bit.modeChoice = 0;
+	    cmd_null->status.bit.res = 0;
             cmd_null->wl = 0;
             cmd_null->wr = 0;
             cmd_null->x = 0;
@@ -430,26 +437,20 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             {
                 if(cmd->status.bit.clearBuffor) //jesli nowy rozkaz czysci kolejke i przerywa aktualne zadanie
                 {
-                    //cmd_buffor[0] = *cmd;
-                    //cmd_buffor[1] = *cmd_null;
-                    //cmd_buffor[2] = *cmd_null;
                     AddToBuffor(cmd_buffor[0], cmd);
                     AddToBuffor(cmd_buffor[1], cmd_null);
                     AddToBuffor(cmd_buffor[2], cmd_null);
                 }
                 else if(!hlController.isRunning)
                 {
-                    //cmd_buffor[0] = *cmd;
                     AddToBuffor(cmd_buffor[0], cmd);
                 }
                 else //nowy rozkaz na koniec kolejki
                 {
                     for(int i=0; i<3; i++) //pierwsza znaleziona pusta komenda w kolejce zostanie zapelniona
                     {
-                        //if(cmd_buffor[i] == *cmd_null)
                         if(IsCmdNull(cmd_buffor[i]))
                         {
-                            //cmd_buffor[i] = *cmd;
                             AddToBuffor(cmd_buffor[i], cmd);
                             break; //end for loop
                         }
@@ -504,7 +505,6 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 {
                     cmd_buffor[i] = cmd_buffor[i+1];
                 }
-                //cmd_buffor[3-1] = *cmd_null;
                 AddToBuffor(cmd_buffor[3-1], cmd_null);
 
                 hlController.targetPos.th = cmd_buffor[0].th;
