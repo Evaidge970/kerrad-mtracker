@@ -17,16 +17,16 @@
 
 
 
-#define MODE_MOTORS_OFF    0x00 //0000000
-#define MODE_MOTORS_ON     0x03 //0000011
-#define MODE_SET_ODOMETRY  0x04 //0000100
-#define MODE_REQUEST_DATA  0x08 //0001000
-#define MODE_CLEAR_BUFFOR  0x16 //0010000
+#define MODE_MOTORS_OFF    0x00 //000 0000
+#define MODE_MOTORS_ON     0x03 //000 0011
+#define MODE_SET_ODOMETRY  0x04 //000 0100
+#define MODE_REQUEST_DATA  0x08 //000 1000
+#define MODE_CLEAR_BUFFOR  0x10 //001 0000
 
-#define MODE_ORIENTATION   0x00 //0000000
-#define MODE_POSITION      0x32 //0100000
-#define MODE_ALGORITHM3    0x64 //1000000
-#define MODE_ALGORITHM4    0x96 //1100000
+#define MODE_ORIENTATION   0x00 //000 0000
+#define MODE_POSITION      0x20 //010 0000
+#define MODE_ALGORITHM3    0x40 //100 0000
+#define MODE_ALGORITHM4    0x60 //110 0000
 
 
 typedef enum MatlabCmd {NoneCmd, OpenCmd, CloseCmd, SetVelCmd, SetOdomCmd, ReadDataCmd, SetFreeWheelsCmd, HLControl}; // HLControl
