@@ -23,8 +23,8 @@
 #define MODE_REQUEST_DATA  0x08 //000 1000
 #define MODE_CLEAR_BUFFOR  0x10 //001 0000
 
-#define MODE_ORIENTATION   0x00 //000 0000
-#define MODE_POSITION      0x20 //010 0000
+#define MODE_POSITION      0x00 //000 0000
+#define MODE_ORIENTATION   0x20 //010 0000
 #define MODE_ALGORITHM3    0x40 //100 0000
 #define MODE_ALGORITHM4    0x60 //110 0000
 
@@ -188,8 +188,8 @@ void setTarget(float x, float y, float theta, bool clearBuffor, int modeChoice) 
 
     mode = mode | MODE_MOTORS_ON;
     if(clearBuffor) mode = mode | MODE_CLEAR_BUFFOR;
-    if(modeChoice == 0) mode = mode | MODE_ORIENTATION;
-    else if(modeChoice == 1) mode = mode | MODE_POSITION;
+    if(modeChoice == 0) mode = mode | MODE_POSITION;
+    else if(modeChoice == 1) mode = mode | MODE_ORIENTATION;
     else if(modeChoice == 2) mode = mode | MODE_ALGORITHM3;
     else if(modeChoice == 3) mode = mode | MODE_ALGORITHM4;
 
