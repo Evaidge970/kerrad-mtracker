@@ -113,29 +113,6 @@ struct CmdHLControl
     float th;
 };
 
-/*
-void CmdMemCopy(CmdHLControl* cmdSource, CmdHLControl* cmdDestination)
-{
-    MemCopy(cmdSource->status.all, cmdSource->wl, cmdDestination->status.all);
-    MemCopy(cmdSource->wl, cmdSource->wr, cmdDestination->wl);
-    MemCopy(cmdSource->wr, cmdSource->x, cmdDestination->wr);
-    MemCopy(cmdSource->x, cmdSource->x+16, cmdDestination->x);
-    MemCopy(cmdSource->x+16, cmdSource->y, cmdDestination->x+16);
-    MemCopy(cmdSource->y, cmdSource->y+16, cmdDestination->y);
-    MemCopy(cmdSource->y+16, cmdSource->th, cmdDestination->y+16);
-    MemCopy(cmdSource->th, cmdSource->th+16, cmdDestination->th);
-    MemCopy(cmdSource->th+16, cmdSource->th+32, cmdDestination->th+16);
-}
-*/
-
-void CmdMemCopy(CmdHLControl* cmdSource, CmdHLControl* cmdDestination)
-{
-    while(cmdSource < cmdSource+64*sizeof(uint16_t))
-    {
-        *cmdDestination++ = *cmdSource++;
-    }
-}
-
 void InitializeFrameHead(uint16_t c, uint16_t s, uint16_t * outBuf)
 {
 	outBuf[0] = s + 4;	//size
@@ -145,27 +122,10 @@ void InitializeFrameHead(uint16_t c, uint16_t s, uint16_t * outBuf)
 	outBuf[4] = 0;	// robot number
 }
 
-//CmdHLControl * cmd_buffor[3]; //kolejka
-CmdHLControl cmd_buffor[3]; //kolejka (nie wskaznik!)
+CmdHLControl cmd_buffor[3]; //kolejka
 
 void InitHLBuffer()
 {
-    /*uint16_t bufInNull0[64];
-    uint16_t bufInNull1[64];
-    uint16_t bufInNull2[64];
-    cmd_buffor[0] = (CmdHLControl*)bufInNull0;
-    cmd_buffor[1] = (CmdHLControl*)bufInNull1;
-    cmd_buffor[2] = (CmdHLControl*)bufInNull2;
-    cmd_buffor[0]->status.bit.requestData = 1;
-    cmd_buffor[1]->status.bit.requestData = 1;
-    cmd_buffor[2]->status.bit.requestData = 1;
-    cmd_buffor[0]->status.bit.drvRegEnable = 1;
-    cmd_buffor[1]->status.bit.drvRegEnable = 1;
-    cmd_buffor[2]->status.bit.drvRegEnable = 1;
-    cmd_buffor[0]->status.bit.motorEnable = 1;
-    cmd_buffor[1]->status.bit.motorEnable = 1;
-    cmd_buffor[2]->status.bit.motorEnable = 1;*/
-
     for(int i=0; i<3; i++)
     {
 	cmd_buffor[i].status.all = 0;
@@ -175,11 +135,9 @@ void InitHLBuffer()
 	cmd_buffor[i].y = 0;
 	cmd_buffor[i].th = 0;
         cmd_buffor[i].status.bit.requestData = 1;
-        cmd_buffor[i].status.bit.drvRegEnable = 1;
-        cmd_buffor[i].status.bit.motorEnable = 1;
+        //cmd_buffor[i].status.bit.drvRegEnable = 1;
+        //cmd_buffor[i].status.bit.motorEnable = 1;
     }
-
-
 }
 
 void AddToBuffor(CmdHLControl& cmd_buffor, CmdHLControl* cmd) //Add cmd to buffor
@@ -194,7 +152,7 @@ void AddToBuffor(CmdHLControl& cmd_buffor, CmdHLControl* cmd) //Add cmd to buffo
 
 bool IsCmdNull(CmdHLControl& cmd) //Check if given cmd is cmd_null
 {
-    if(cmd.status.all == 11 && cmd.x == 0 && cmd.y == 0 && cmd.th == 0 && cmd.wl == 0 && cmd.wr == 0)
+    if(cmd.status.all == 8 && cmd.x == 0 && cmd.y == 0 && cmd.th == 0 && cmd.wl == 0 && cmd.wr == 0)
         {
             return true;
         }
@@ -411,8 +369,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
             //pusta komenda do wypelnienia kolejki
             CmdHLControl * cmd_null = (CmdHLControl *) bufInN;
-            cmd_null->status.bit.drvRegEnable = 1;
-            cmd_null->status.bit.motorEnable = 1;
+            cmd_null->status.bit.drvRegEnable = 0;
+            cmd_null->status.bit.motorEnable = 0;
             cmd_null->status.bit.requestData = 1;
             cmd_null->status.bit.setOdometry = 0;
             cmd_null->status.bit.clearBuffor = 0;
