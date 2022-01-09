@@ -69,13 +69,13 @@ public:
         {
             case 0:
             {
-                Mode = ORIENTATION;
+                Mode = POSITION;
                 Setting = TEST;
             }
             break;
             case 1:
             {
-                Mode = POSITION;
+                Mode = ORIENTATION;
                 Setting = TEST;
             }
             break;
@@ -136,7 +136,7 @@ public:
                                 v = -k*(cos(odometry.posture.th)*ex + sin(odometry.posture.th)*ey);
                                 w = -k*(-sin(odometry.posture.th)*ex/d + cos(odometry.posture.th)*ey/d);
 
-                                this->SetVelocities((v+0.5*WHEEL_BASE*w)/WHEEL_RADIUS, -(v-0.5*WHEEL_BASE*w)/WHEEL_RADIUS);   //pamiêtaj o minusie przy lewym kole
+                                this->SetVelocities((v+0.5*WHEEL_BASE*w)/WHEEL_RADIUS, -(v-0.5*WHEEL_BASE*w)/WHEEL_RADIUS);   //pamiÃªtaj o minusie przy lewym kole
 
                             }
             }
