@@ -488,8 +488,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
 
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_phi);
 //            StoreFloatDataInBuf(dataOut, drive.regL.e_w);
-            StoreFloatDataInBuf(dataOut, (int16) cmd_buffor[0].status.all);
-            //StoreFloatDataInBuf(dataOut, odometry.posture.th);
+            //StoreFloatDataInBuf(dataOut, (int16) cmd_buffor[0].status.all);
+            StoreFloatDataInBuf(dataOut, odometry.posture.th);
             Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regL.u));
             Store16bitDataInBuf(dataOut, (int16)_IQ12(drive.regR.u));
 

@@ -16,7 +16,7 @@ public:
 
     WheelsVelocities wheelsVel;
     Posture2D targetPos; //zawiera x, y i th
-    float error;
+    float error_position, error_orientation;
 
     bool isTriggered;
     bool isRunning; //w trakcie regulacji
@@ -36,7 +36,8 @@ public:
         isTriggered = true;
         isRunning = false;
         //isRunning = true;
-        error = 0.01;
+        error_position = 0.01;
+        error_orientation = 0.02;
         Mode = POSITION;
         Setting = TEST;
 
@@ -109,7 +110,7 @@ public:
             {
 
                 //this->SetVelocities(1,1);
-                if(abs_float(odometry.posture.th - targetPos.th) < error)
+                if(abs_float(odometry.posture.th - targetPos.th) < error_orientation)
                 {
                     isRunning = false;
                     this->Stop();
@@ -123,7 +124,7 @@ public:
         {
             if(isRunning)
             {
-                if(abs_float(odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x) < error && abs_float(odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y) < error)
+                if(abs_float(odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x) < error_position && abs_float(odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y) < error_position)
                 {
                     isRunning = false;
                     this->Stop();

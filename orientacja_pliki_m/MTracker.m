@@ -34,9 +34,7 @@ MTrackerDriver('setOdometry', q_i);
 wait(tau, 0.1);
 data = MTrackerDriver('read');
 
-first_was = 0;
-second_was = 0;
-third_was = 0;
+done = zeros(10);
 
 
 tic;
@@ -45,19 +43,35 @@ disp('Robot is started.');
 %MTrackerDriver('highLevelControl',[x; y; th; czy zadac nowy punkt; czy wyczyscic bufor kolejki; tryb])
 %czy zadac nowy punkt: 0 - pusta ramka, odczyt; 1 - wyslanie nowego rozkazu
 %czy wyczyscic bufor kolejki: 0 - dodac rozkaz do kolejki; 1 - przerwac wykonanie zadania i wykonac od razu wyslany rozkaz
-%tryb: 0 - orientacja; 1 - pozycja; 2 - algorytm XYZ; 3 - algorytm ABC
-MTrackerDriver('highLevelControl',[-1.1; 1.3; 0.0; 1;1;1]); 
+%tryb: 0 - pozycja; 1 - orientacja; 2 - algorytm XYZ; 3 - algorytm ABC
+%MTrackerDriver('highLevelControl',[-1.1; 1.3; 0.0; 1;1;1]); 
 while (tau < Tf)
     
     i = i+1;
     tau = toc;
 
-    MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 0;0;1]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
+    
+    
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 0;0;0]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
 
-    if (tau > 2 && first_was == 0)
-        MTrackerDriver('highLevelControl',[1.1; 1.9; 0.0; 1;0;1]);
-        first_was = 1;
+    if (tau >= 0 && done(1) == 0)
+        MTrackerDriver('highLevelControl',[0.5; 0.1; 0.3; 1;0;1]);
+        done(1) = 1;
     end
+    
+    if (tau > 2 && done(2) == 0)
+        MTrackerDriver('highLevelControl',[-0.1; 0.5; 0.8; 1;0;1]);
+        done(2) = 1;
+    end
+    if (tau > 4 && done(3) == 0)
+        MTrackerDriver('highLevelControl',[-0.5; -0.1; -1.0; 1;0;1]);
+        done(3) = 1;
+    end
+    %if (tau > 5 && done(4) == 0)
+    %    MTrackerDriver('highLevelControl',[-0.4; -0.2; 0.0; 1;0;0]);
+    %    done(4) = 1;
+    %end
+
     
     wait(tau, Ts);
     data = MTrackerDriver('read');
