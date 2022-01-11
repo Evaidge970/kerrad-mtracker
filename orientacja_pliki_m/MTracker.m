@@ -54,25 +54,6 @@ while (tau < Tf)
     
     MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 0;0;0]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
 
-    if (tau >= 0 && done(1) == 0)
-        MTrackerDriver('highLevelControl',[0.5; 0.1; 0.3; 1;0;1]);
-        done(1) = 1;
-    end
-    
-    if (tau > 2 && done(2) == 0)
-        MTrackerDriver('highLevelControl',[-0.1; 0.5; 0.8; 1;0;1]);
-        done(2) = 1;
-    end
-    if (tau > 4 && done(3) == 0)
-        MTrackerDriver('highLevelControl',[-0.5; -0.1; -1.0; 1;0;1]);
-        done(3) = 1;
-    end
-    %if (tau > 5 && done(4) == 0)
-    %    MTrackerDriver('highLevelControl',[-0.4; -0.2; 0.0; 1;0;0]);
-    %    done(4) = 1;
-    %end
-
-    
     wait(tau, Ts);
     data = MTrackerDriver('read');
     
