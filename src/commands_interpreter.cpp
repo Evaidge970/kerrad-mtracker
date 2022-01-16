@@ -434,6 +434,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 hlController.isRunning = true;
                 //ustaw tryb HLControllera przed wykonaniem zadania
                 hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
+		hlController.SetErrorConstVelMode(); //ustawia blad w chwili 0 dla trybu CONST_VEL
             }
             else //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
             {
@@ -485,6 +486,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 hlController.isRunning = true;
                 //ustaw tryb HLControllera przed wykonaniem zadania
                 hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
+		hlController.SetErrorConstVelMode(); //ustawia blad w chwili 0 dla trybu CONST_VEL
             }
 
             EINT;
