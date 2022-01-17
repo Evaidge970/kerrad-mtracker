@@ -3,11 +3,11 @@
 % (c) KSIS, D. Pazderski 2015
 %*************************************************************************
 
-if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
+if (MTrackerDriver('open', [4, 921600]) == -1) % bylo 115200
     return;
 end
 
-Tf = 10;
+Tf = 30;
 Ts = 0.03;
 d=0.1;
 n = floor(Tf/Ts)+1;
@@ -17,11 +17,6 @@ t = zeros(1, n);
 dataReady = zeros(1, n);
 w = zeros(2, n);
 q = zeros(3, n);
-
-
-% Define user data
-
-
 
 % Initial localization
 q_i = [0; 0; 0];
@@ -39,12 +34,16 @@ done = zeros(10);
 
 tic;
 disp('Robot is started.');
-% Main control loop
-%MTrackerDriver('highLevelControl',[x; y; th; czy zadac nowy punkt; czy wyczyscic bufor kolejki; tryb])
+
+%zadane wspó³rzêdne
+
 %czy zadac nowy punkt: 0 - pusta ramka, odczyt; 1 - wyslanie nowego rozkazu
+
 %czy wyczyscic bufor kolejki: 0 - dodac rozkaz do kolejki; 1 - przerwac wykonanie zadania i wykonac od razu wyslany rozkaz
-%tryb: 0 - pozycja; 1 - orientacja; 2 - algorytm XYZ; 3 - algorytm ABC
-%MTrackerDriver('highLevelControl',[-1.1; 1.3; 0.0; 1;1;1]); 
+
+%tryb: 0 - pozycja; 1 - orientacja; 2 - pozycja z ustalon¹ prêdkoœci¹; 
+% 3 -tryb none
+
 while (tau < Tf)
     
     i = i+1;
@@ -54,6 +53,19 @@ while (tau < Tf)
     
     MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 0;0;0]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
 
+    if (done(2) == 0)
+         MTrackerDriver('highLevelControl',[0.8; -1.1; 0.0; 1;0;2]);
+         done(2) = 1;
+    end
+
+    if (done(4) == 0 && tau > 6)
+         MTrackerDriver('highLevelControl',[0.2; 0.3; 0.0; 1;0;2]);
+         done(4) = 1;
+    end
+   
+    
+
+    
     wait(tau, Ts);
     data = MTrackerDriver('read');
     
@@ -68,7 +80,7 @@ while (tau < Tf)
     w(:,i) = w_i; 
     t(i) = tau;  
 end
-%MTrackerDriver('highLevelControl',[1.3; 2.5; 0.0; 1]);
+
 
    
  

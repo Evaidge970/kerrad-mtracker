@@ -5,9 +5,12 @@
 #include "odometry.h"
 #include "math_routines.h"
 #include "robot.h"
+
 //#include "global_data.h"
 
 extern Odometry odometry;
+extern Drive drive;
+
 
 class HighLevelController
 {
@@ -24,7 +27,7 @@ public:
     float wr_max, wl_max;
     float ex, ey, v, w, k, d, D, r, v_ax, v_ay, V_const, eps, ex0, ey0, w_x, w_y; //w - omega; w_x i w_y - elementy wektora w
 
-    enum ModeEnum {ZERO, POSITION, ORIENTATION}; //tryby HLC
+    enum ModeEnum {ZERO, POSITION, ORIENTATION,NONE}; //tryby HLC
     enum SettingEnum {DEFAULT, CONST_VEL}; //ustawienia regulatora
     ModeEnum Mode;
     SettingEnum Setting;
@@ -40,8 +43,8 @@ public:
 	V_const = 0.1; //predkosc ruchu w trybie CONST_VEL
 	eps = 0.5;
 	ex0 = 0.0; ey0 = 0.0;
-        Mode = POSITION;
-        Setting = TEST;
+        //Mode = POSITION;
+        //Setting = TEST;
         k=0.2; d=0.1;
 
         wr_max = 2;
@@ -101,13 +104,34 @@ public:
         wheelsVel.rightWheel = 0;
         isTriggered = true;
     }
+    void Slow(float a)
+    {
+        if(abs_float(drive.wL) > 0.1)
+            wheelsVel.leftWheel = wheelsVel.leftWheel*a;
+        else
+        {
+           wheelsVel.leftWheel = 0.0;
+           isRunning = false;
+        }
+        if(abs_float(drive.wR) > 0.1)
+            wheelsVel.rightWheel = wheelsVel.rightWheel*a;
+        else
+        {
+            wheelsVel.rightWheel = 0.0;
+            isRunning = false;
+        }
+        isTriggered = true;
+
+
+
+    }
 
     bool Update()
     {
 	if(Mode == NONE)
 	{
-	    this->Stop();
-	    isRunning = false;
+	    this->Slow(0.5);
+
 	}
         if(Mode == ORIENTATION && Setting == DEFAULT)
         {
@@ -153,10 +177,10 @@ public:
                     isRunning = false;
                     this->Stop();
                 } else {
-                    v_ax = ex0/(sqrt(ex0*ex0 + ey0*ey0);
-		    v_ay = ey0/(sqrt(ex0*ex0 + ey0*ey0);
-		    w_x = (-k*ex + eps*v_ax)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay)));
-		    w_y = (-k*ey + eps*v_ay)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay)));
+                    v_ax = ex0/(sqrt(ex0*ex0 + ey0*ey0));
+		    v_ay = ey0/(sqrt(ex0*ex0 + ey0*ey0));
+		    w_x = -((-k*ex + eps*v_ax)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
+		    w_y = -((-k*ey + eps*v_ay)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
                     v = cos(odometry.posture.th)*w_x + sin(odometry.posture.th)*w_y;
                     w = -sin(odometry.posture.th)*w_x/d + cos(odometry.posture.th)*w_y/d;
                     this->SetVelocities((v+0.5*WHEEL_BASE*w)/WHEEL_RADIUS, -(v-0.5*WHEEL_BASE*w)/WHEEL_RADIUS);   //pamietaj o minusie przy lewym kole

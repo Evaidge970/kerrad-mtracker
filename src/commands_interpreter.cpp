@@ -416,6 +416,7 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 else if(!hlController.isRunning)
                 {
                     AddToBuffor(cmd_buffor[0], cmd);
+
                 }
                 else //nowy rozkaz na koniec kolejki
                 {
@@ -439,6 +440,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             else //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
             {
                 
+
+
             }
 
 
