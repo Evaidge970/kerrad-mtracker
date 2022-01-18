@@ -103,7 +103,8 @@ struct CmdHLControl
             uint16_t requestData : 1;
             uint16_t clearBuffor : 1;
             uint16_t modeChoice : 2;
-            uint16_t res : 9;
+            uint16_t parChoice : 3;
+            uint16_t res : 6;
         } bit;
     }  status;
     int16_t wl;
@@ -130,15 +131,13 @@ void InitHLBuffer()
 {
     for(int i=0; i<10; i++)
     {
-	cmd_buffor[i].status.all = 0;
-	cmd_buffor[i].wl = 0;
-	cmd_buffor[i].wr = 0;
-	cmd_buffor[i].x = 0;
-	cmd_buffor[i].y = 0;
-	cmd_buffor[i].th = 0;
+        cmd_buffor[i].status.all = 0;
+        cmd_buffor[i].wl = 0;
+        cmd_buffor[i].wr = 0;
+        cmd_buffor[i].x = 0;
+        cmd_buffor[i].y = 0;
+        cmd_buffor[i].th = 0;
         cmd_buffor[i].status.bit.requestData = 1;
-        //cmd_buffor[i].status.bit.drvRegEnable = 1;
-        //cmd_buffor[i].status.bit.motorEnable = 1;
     }
 }
 
@@ -377,7 +376,8 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             cmd_null->status.bit.setOdometry = 0;
             cmd_null->status.bit.clearBuffor = 0;
             cmd_null->status.bit.modeChoice = 0;
-	    cmd_null->status.bit.res = 0;
+            cmd_null->status.bit.parChoice = 0;
+            cmd_null->status.bit.res = 0;
             cmd_null->wl = 0;
             cmd_null->wr = 0;
             cmd_null->x = 0;
@@ -400,7 +400,6 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                     AddToBuffor(cmd_buffor[0], cmd);
                     AddToBuffor(cmd_buffor[1], cmd_null);
                     AddToBuffor(cmd_buffor[2], cmd_null);
-
                     AddToBuffor(cmd_buffor[3], cmd_null);
                     AddToBuffor(cmd_buffor[4], cmd_null);
                     AddToBuffor(cmd_buffor[5], cmd_null);
@@ -408,15 +407,10 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                     AddToBuffor(cmd_buffor[7], cmd_null);
                     AddToBuffor(cmd_buffor[8], cmd_null);
                     AddToBuffor(cmd_buffor[9], cmd_null);
-
-
-
-
                 }
                 else if(!hlController.isRunning)
                 {
                     AddToBuffor(cmd_buffor[0], cmd);
-
                 }
                 else //nowy rozkaz na koniec kolejki
                 {
@@ -432,18 +426,18 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 hlController.targetPos.th = cmd_buffor[0].th;
                 hlController.targetPos.x = cmd_buffor[0].x;
                 hlController.targetPos.y = cmd_buffor[0].y;
-		hlController.isRunning = true;
+                hlController.isRunning = true;
                 //ustaw tryb HLControllera przed wykonaniem zadania
                 hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
-		hlController.SetErrorConstVelMode(); //ustawia blad w chwili 0 dla trybu CONST_VEL
+                hlController.SetErrorConstVelMode(); //ustawia blad w chwili 0 dla trybu CONST_VEL
             }
-            else //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota)
+            else //jesli w trybie wysylania pustych ramek (tylko odczyt danych z robota) lub zmiana parametru
             {
-                
-
-
+                if((unsigned int)cmd->status.bit.parChoice != 0)
+                {
+                    hlController.SetParameters((unsigned int)cmd->status.bit.parChoice, cmd->x, cmd->y, cmd->th);
+                }
             }
-
 
             //wykonuj pierwszy rozkaz z kolejki
             // set velocity?

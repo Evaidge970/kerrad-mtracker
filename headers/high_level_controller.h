@@ -6,8 +6,6 @@
 #include "math_routines.h"
 #include "robot.h"
 
-//#include "global_data.h"
-
 extern Odometry odometry;
 extern Drive drive;
 
@@ -24,8 +22,10 @@ public:
     bool isTriggered;
     bool isRunning; //w trakcie regulacji
 
-    float wr_max, wl_max;
-    float ex, ey, v, w, k, d, D, r, v_ax, v_ay, V_const, eps, ex0, ey0, w_x, w_y; //w - omega; w_x i w_y - elementy wektora w
+    float wr_max, wl_max; //globalne nasycenie predkosci
+    float wr_max_orientation, wl_max_orientation; //tryb orientacji
+    float SlowCoef, SlowThreshold; //wspolczynnik zwolnienia trybu slow, prog zakonczenia trybu slow
+    float ex, ey, v, w, k, d, r, v_ax, v_ay, V_const, eps, ex0, ey0, w_x, w_y; //w - omega; w_x i w_y - elementy wektora w
 
     enum ModeEnum {ZERO, POSITION, ORIENTATION,NONE}; //tryby HLC
     enum SettingEnum {DEFAULT, CONST_VEL}; //ustawienia regulatora
@@ -40,31 +40,77 @@ public:
         isRunning = false;
         error_position = 0.01;
         error_orientation = 0.02;
-	V_const = 0.1; //predkosc ruchu w trybie CONST_VEL
-	eps = 0.5;
-	ex0 = 0.0; ey0 = 0.0;
-        //Mode = POSITION;
-        //Setting = TEST;
+        V_const = 0.1; //predkosc ruchu w trybie CONST_VEL
+        eps = 0.5;
+        ex0 = 0.0; ey0 = 0.0;
         k=0.2; d=0.1;
-
-        wr_max = 2;
-        wl_max = 2;
+        wr_max = 30.0;
+        wl_max = 30.0;
+        wr_max_orientation = 2; //tryb orientacji
+        wl_max_orientation = 2;
+        SlowCoef = 0.5; //tryb slow
+        SlowThreshold = 0.1;
 	}
 
 
     void SetVelocities(float wr, float wl)
     {
-        if(abs_float(wr)>25.0) wheelsVel.rightWheel = 25.0;
-	else wheelsVel.rightWheel = wr;
-	if(abs_float(wl)>25.0) wheelsVel.leftWheel = 25.0;
-	else wheelsVel.leftWheel = wl;
-	isTriggered = true;
+        if(wr>wr_max) wheelsVel.rightWheel = wr_max;
+        else if(wr<-wr_max) wheelsVel.rightWheel = -wr_max;
+        else wheelsVel.rightWheel = wr;
+        if(wl>wl_max) wheelsVel.leftWheel = wl_max;
+        else if(wl<-wl_max) wheelsVel.leftWheel = -wl_max;
+        else wheelsVel.leftWheel = wl;
+        isTriggered = true;
     }
 	
     void SetErrorConstVelMode() //powinno byc wywolane tylko raz na jeden rozkaz
     {
-	ex0 = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
-	ey0 = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
+        ex0 = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
+        ey0 = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
+    }
+
+    void SetParameters(unsigned int parChoice, float x, float y, float th)
+    {
+        switch(parChoice)
+        {
+            case 1:
+            {
+                wl_max_orientation = x;
+                wr_max_orientation = y;
+                error_orientation = th;
+            }
+            break;
+            case 2:
+            {
+                k = x;
+                d = y;
+                error_position = th;
+            }
+            break;
+            case 3:
+            {
+                V_const = x;
+                eps = y;
+                error_position = th;
+            }
+            break;
+            case 4:
+            {
+                SlowCoef = x;
+                SlowThreshold = y;
+                error_position = th;
+            }
+            break;
+            case 5:
+            {
+                wl_max = x;
+                wr_max = y;
+                error_position = th;
+            }
+            default:
+            break;
+        }
     }
 
     void SetMode(unsigned int modeChoice)
@@ -106,14 +152,16 @@ public:
     }
     void Slow(float a)
     {
-        if(abs_float(drive.wL) > 0.1)
+        if(a>1) a=0.5;
+        if(a<0) a=0.5;
+        if(abs_float(drive.wL) > SlowThreshold)
             wheelsVel.leftWheel = wheelsVel.leftWheel*a;
         else
         {
            wheelsVel.leftWheel = 0.0;
            isRunning = false;
         }
-        if(abs_float(drive.wR) > 0.1)
+        if(abs_float(drive.wR) > SlowThreshold)
             wheelsVel.rightWheel = wheelsVel.rightWheel*a;
         else
         {
@@ -121,16 +169,13 @@ public:
             isRunning = false;
         }
         isTriggered = true;
-
-
-
     }
 
     bool Update()
     {
 	if(Mode == NONE)
 	{
-	    this->Slow(0.5);
+	    this->Slow(SlowCoef);
 
 	}
         if(Mode == ORIENTATION && Setting == DEFAULT)
@@ -144,7 +189,7 @@ public:
                     isRunning = false;
                     this->Stop();
                 } else {
-                   this->SetVelocities(-wr_max*sign(odometry.posture.th - targetPos.th),-wl_max*sign(odometry.posture.th - targetPos.th));
+                   this->SetVelocities(-wr_max_orientation*sign(odometry.posture.th - targetPos.th),-wl_max_orientation*sign(odometry.posture.th - targetPos.th));
                 }
             }
         }

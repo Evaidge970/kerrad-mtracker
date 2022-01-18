@@ -17,17 +17,24 @@
 
 
 
-#define MODE_MOTORS_OFF    0x00 //000 0000
-#define MODE_MOTORS_ON     0x03 //000 0011
-#define MODE_SET_ODOMETRY  0x04 //000 0100
-#define MODE_REQUEST_DATA  0x08 //000 1000
-#define MODE_CLEAR_BUFFOR  0x10 //001 0000
+#define MODE_MOTORS_OFF    0x000 //0000 0000 0000
+#define MODE_MOTORS_ON     0x003 //0000 0000 0011
+#define MODE_SET_ODOMETRY  0x004 //0000 0000 0100
+#define MODE_REQUEST_DATA  0x008 //0000 0000 1000
+#define MODE_CLEAR_BUFFOR  0x010 //0000 0001 0000
 
-#define MODE_POSITION      0x00 //000 0000
-#define MODE_ORIENTATION   0x20 //010 0000
-#define MODE_ALGORITHM3    0x40 //100 0000
-#define MODE_ALGORITHM4    0x60 //110 0000
+#define MODE_POSITION      0x000 //0000 0000 0000
+#define MODE_ORIENTATION   0x020 //0000 0010 0000
+#define MODE_ALGORITHM3    0x040 //0000 0100 0000
+#define MODE_ALGORITHM4    0x060 //0000 0110 0000
 
+#define MODE_SET_P1        0x080 //0000 1000 0000
+#define MODE_SET_P2        0x100 //0001 0000 0000
+#define MODE_SET_P3        0x180 //0001 1000 0000
+#define MODE_SET_P4        0x200 //0010 0000 0000
+#define MODE_SET_P5        0x280 //0010 1000 0000
+#define MODE_SET_P6        0x300 //0011 0000 0000
+#define MODE_SET_P7        0x380 //0011 1000 0000
 
 typedef enum MatlabCmd {NoneCmd, OpenCmd, CloseCmd, SetVelCmd, SetOdomCmd, ReadDataCmd, SetFreeWheelsCmd, HLControl}; // HLControl
 
@@ -179,7 +186,7 @@ void setOdometry(float x, float y, float theta)
     prepareFrame(MODE_SET_ODOMETRY | MODE_MOTORS_ON, CMD_SET_WHEELS_AND_ODOM);
 }
 
-void setTarget(float x, float y, float theta, bool clearBuffor, int modeChoice) // nowa funkcja - ustaw cel
+void setTarget(float x, float y, float theta, bool clearBuffor, int modeChoice)
 {
     uint16_t mode = 0; //pusty tryb
     tx_frame.x = x;
@@ -196,13 +203,34 @@ void setTarget(float x, float y, float theta, bool clearBuffor, int modeChoice) 
     prepareFrame(mode, CMD_HIGH_LVL_CONTROL);
 }
 
-void requestData() // wysyla puste zapytania, zeby robot wyslal aktualna pozycje
+void requestData(float x, float y, float theta, bool clearBuffor, int parChoice) // wysyla puste zapytania, zeby robot wyslal aktualna pozycje lub ustawia parametr
 {
-    tx_frame.x = 0.0;
-    tx_frame.y = 0.0;
-    tx_frame.theta = 0.0;
+    uint16_t mode = 0;
 
-    prepareFrame(MODE_MOTORS_ON | MODE_REQUEST_DATA, CMD_HIGH_LVL_CONTROL);
+    if(parChoice == 0)
+    {
+        tx_frame.x = 0.0;
+        tx_frame.y = 0.0;
+        tx_frame.theta = 0.0;
+    }
+    else
+    {
+        tx_frame.x = x;
+        tx_frame.y = y;
+        tx_frame.theta = theta;
+        if(clearBuffor) mode = mode | MODE_CLEAR_BUFFOR;
+        if(parChoice == 1) mode = mode | MODE_SET_P1;
+        else if(parChoice == 2) mode = mode | MODE_SET_P2;
+        else if(parChoice == 3) mode = mode | MODE_SET_P3;
+        else if(parChoice == 4) mode = mode | MODE_SET_P4;
+        else if(parChoice == 5) mode = mode | MODE_SET_P5;
+        else if(parChoice == 6) mode = mode | MODE_SET_P6;
+        else if(parChoice == 7) mode = mode | MODE_SET_P7;
+    }
+
+    mode = mode | MODE_MOTORS_ON;
+    mode = mode | MODE_REQUEST_DATA;
+    prepareFrame(mode, CMD_HIGH_LVL_CONTROL);
 }
 
 void setVelocity(float w_r, float w_l)
@@ -409,7 +437,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 }
                 else //jesli wysylamy pusta ramke (chcemy tylko odczytac dane z robota)
                 {
-                    requestData();
+                    requestData((float)matrixData[0], (float)matrixData[1], (float)matrixData[2], (bool)matrixData[4], (int)matrixData[6]);
                 }
                 plhs[0] = mxCreateNumericMatrix(1,26, mxUINT8_CLASS, mxREAL);
                     

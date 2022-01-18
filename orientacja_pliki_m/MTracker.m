@@ -35,14 +35,28 @@ done = zeros(10);
 tic;
 disp('Robot is started.');
 
-%zadane wspó³rzêdne
+% ----------------------FORMAT KOMENDY----------------------
+% Wspolrzedne x LUB parametr
+% Wspolrzedne y LUB parametr
+% Kat th LUB parametr
+% ------------
+% Czy nowy rozkaz? 0 - odczyt danych, 1 - nowy rozkaz
+% Czy czyscic bufor kolejki? 0 - nie, 1 - czyscic czyli przerwac aktualne zadanie
+% Tryb sterowania 0-3: 0 - pozycja, 1 - orientacja, 2 - pozycja z ustalona predkoscia, 3 - tryb spowolnienia do 0 (slow)
+% Wybor parametru 0-7: 0 - brak zmiany ustawien, 1-7 - ustawianie parametrow wg. tablicy parametrow
+% ----------------------------------------------------------
 
-%czy zadac nowy punkt: 0 - pusta ramka, odczyt; 1 - wyslanie nowego rozkazu
-
-%czy wyczyscic bufor kolejki: 0 - dodac rozkaz do kolejki; 1 - przerwac wykonanie zadania i wykonac od razu wyslany rozkaz
-
-%tryb: 0 - pozycja; 1 - orientacja; 2 - pozycja z ustalon¹ prêdkoœci¹; 
-% 3 -tryb none
+% ----------------------TABLICA PARAMETROW------------------
+% Parametr | x                  | y                  | th
+% 0        |            brak zmiany parametru
+% 1        | wl_max_orientation | wr_max_orientation | error_orientation
+% 2        | k                  | d                  | error_position
+% 3        | V_const            | eps                | error_position
+% 4        | SlowCoef           | SlowThreshold      | error_position
+% 5        | wl_max             | wr_max             | error_position
+% 6        |               nieuzywane
+% 7        |               nieuzywane
+% ----------------------------------------------------------
 
 while (tau < Tf)
     
@@ -51,14 +65,14 @@ while (tau < Tf)
 
     
     
-    MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 0;0;0]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
+    MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 0;0;0; 0]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
 
     if (done(2) == 0)
-         MTrackerDriver('highLevelControl',[0.8; -1.1; 0.0; 1;0;2]);
+         MTrackerDriver('highLevelControl',[0.8; -1.1; 0.0; 1;0;2; 0]);
          done(2) = 1;
     end
     if (done(1) == 0 && tau > 5 )
-         MTrackerDriver('highLevelControl',[0.8; -1.1; -0.4; 1;1;1]);
+         MTrackerDriver('highLevelControl',[0.8; -1.1; -0.4; 1;1;1; 0]);
          done(1) = 1;
     end
     
@@ -82,11 +96,6 @@ while (tau < Tf)
     t(i) = tau;  
 end
 
-
-   
- 
- 
-%MTrackerDriver('highLevelControl',[0.0; 0.0; 4.0; 1])
 MTrackerDriver('close');
 q_z = ones(3,n);
 for i=1:n
@@ -94,15 +103,10 @@ for i=1:n
     q_z(2,i) = q(2,i)+d*sin(q(3,i));
     q_z(3,i) = q(3,i);
 end
-    
-    
 
 % Adjust buffers
 t = t(:, 1:i);
 w = w(:, 1:i);
 q = q(:, 1:i);
-
-
-
 
 disp('Robot is stopped.');
