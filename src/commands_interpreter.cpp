@@ -486,11 +486,11 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
                 hlController.targetPos.th = cmd_buffor[0].th;
                 hlController.targetPos.x = cmd_buffor[0].x;
                 hlController.targetPos.y = cmd_buffor[0].y;
-                if(!IsCmdNull(cmd_buffor[0]) hlController.isRunning = true; //ustawia isRunning tylko dla rozkazow innych niz cmd_null
+                if(!IsCmdNull(cmd_buffor[0])) hlController.isRunning = true; //ustawia isRunning tylko dla rozkazow innych niz cmd_null
                 //ustaw tryb HLControllera przed wykonaniem zadania
                 hlController.SetMode((unsigned int)cmd_buffor[0].status.bit.modeChoice);
 		hlController.SetErrorConstVelMode(); //ustawia blad w chwili 0 dla trybu CONST_VEL
-            }
+            };
 
             EINT;
 

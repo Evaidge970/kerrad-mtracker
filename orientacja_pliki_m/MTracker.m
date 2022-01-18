@@ -3,7 +3,7 @@
 % (c) KSIS, D. Pazderski 2015
 %*************************************************************************
 
-if (MTrackerDriver('open', [4, 921600]) == -1) % bylo 115200
+if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
     return;
 end
 
@@ -57,12 +57,13 @@ while (tau < Tf)
          MTrackerDriver('highLevelControl',[0.8; -1.1; 0.0; 1;0;2]);
          done(2) = 1;
     end
-
-    if (done(4) == 0 && tau > 6)
-         MTrackerDriver('highLevelControl',[0.2; 0.3; 0.0; 1;0;2]);
-         done(4) = 1;
+    if (done(1) == 0 && tau > 5 )
+         MTrackerDriver('highLevelControl',[0.8; -1.1; -0.4; 1;1;1]);
+         done(1) = 1;
     end
-   
+    
+
+    
     
 
     
@@ -100,6 +101,8 @@ end
 t = t(:, 1:i);
 w = w(:, 1:i);
 q = q(:, 1:i);
+
+
 
 
 disp('Robot is stopped.');
