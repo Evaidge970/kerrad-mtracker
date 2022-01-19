@@ -374,7 +374,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 					wl = rx_frame->w_l / 256.0;
 					wr = rx_frame->w_r / 256.0;
 					x = rx_frame->x;
-					y = ->y;
+					y = rx_frame->y;
 					th = rx_frame->theta;
                     ul = rx_frame->u_l / 4096.0;
                     ur = rx_frame->u_r / 4096.0;                   
