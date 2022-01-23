@@ -7,7 +7,7 @@ if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
     return;
 end
 
-Tf = 15;
+Tf = 5;
 Ts = 0.03;
 d=0.2;
 n = floor(Tf/Ts)+1;
@@ -19,7 +19,7 @@ w = zeros(2, n);
 q = zeros(3, n);
 
 % Initial localization
-q_i = [0; 0; 0];
+q_i = [0.0;0.0; 0.0];
 w_i = [0;0];
 
 i = 0; tau = 0;
@@ -64,21 +64,43 @@ while (tau < Tf)
     tau = toc;
 
     
-    if (done(1) == 0)
-    MTrackerDriver('highLevelControl',[0.08; 0.5; 0.01; 1;0;0; 3]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
-    done(1) = 1;
-    elseif (done(2) == 0)
-    MTrackerDriver('highLevelControl',[0.2; 0.2; 0.01; 1;0;0; 2]);
-    done(2) = 1;
-    else
+   % if (done(1) == 0)
+   % MTrackerDriver('highLevelControl',[0.08; 0.5; 0.01; 0;1;0; 3]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
+   % done(1) = 1;
+   % elseif (done(2) == 0)
+   % MTrackerDriver('highLevelControl',[0.2; 0.2; 0.01; 0;1;0; 2]);
+   % done(2) = 1;
+   % else
     MTrackerDriver('highLevelControl',[0.5; 0.5; 0.01; 0;0;0; 0]);
-    end
+   % end
     
-    if (done(4) == 0 && done(2) )
-         MTrackerDriver('highLevelControl',[0.8; 0.4; -0.4; 1;0;2; 0]);
+    if (done(4) == 0  )
+         MTrackerDriver('highLevelControl',[0.8; 0.9; -0.4; 1;1;1; 0]);
          done(4) = 1;
     end
+    %if (done(3) == 0  )
+    %     MTrackerDriver('highLevelControl',[1.1; 1.2; -0.4; 1;0;2; 0]);
+    %     done(3) = 1;
+    %end
+    %{
+    if (done(5) == 0  && tau > 3 )
+         MTrackerDriver('highLevelControl',[-0.3; -0.2; -0.4; 1;1;0; 0]);
+         done(5) = 1;
+    end
+    if (done(6) == 0  && done(5) )
+         MTrackerDriver('highLevelControl',[-0.3; -0.2; -0.4; 1;0;1; 0]);
+         done(6) = 1;
+    end
+    if (done(3) == 0  )
+         MTrackerDriver('highLevelControl',[0.1; -1.2; -0.4; 1;0;2; 0]);
+         done(3) = 1;
+    end
+    if (done(7) == 0 && done(3) )
+         MTrackerDriver('highLevelControl',[-1.1; -1.2; -0.4; 1;0;2; 0]);
+         done(7) = 1;
+    end
     
+    %}
     %{
     if (done(5) == 0)
          MTrackerDriver('highLevelControl',[0.05; 0.5; 0.01; 0;1;1; 5]);
