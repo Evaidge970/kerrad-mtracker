@@ -74,6 +74,22 @@ public:
     {
         switch(parChoice)
         {
+	    case 0:
+		{
+			error_position = 0.01;
+        		error_orientation = 0.02;	
+			V_const = 0.1; //predkosc ruchu w trybie CONST_VEL
+        		eps = 0.5;
+			k=0.2;
+			d=0.1;
+        		wr_max = 30.0;
+        		wl_max = 30.0;
+        		wr_max_orientation = 2; //tryb orientacji
+        		wl_max_orientation = 2;
+        		SlowCoef = 0.5; //tryb slow
+        		SlowThreshold = 0.1;
+		}
+	    break;
             case 1:
             {
                 wl_max_orientation = x;
