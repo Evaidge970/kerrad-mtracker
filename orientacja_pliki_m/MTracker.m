@@ -7,9 +7,9 @@ if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
     return;
 end
 
-Tf = 5;
+Tf = 30;
 Ts = 0.03;
-d=0.2;
+d=0.1;
 n = floor(Tf/Ts)+1;
 
 % Initialization of buffers to store data
@@ -64,24 +64,24 @@ while (tau < Tf)
     tau = toc;
 
     
-   % if (done(1) == 0)
-   % MTrackerDriver('highLevelControl',[0.08; 0.5; 0.01; 0;1;0; 3]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
-   % done(1) = 1;
+   if (done(1) == 0)
+   MTrackerDriver('highLevelControl',[0.2; 0.1; 0.1; 0;1;0; 2]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
+   done(1) = 1;
    % elseif (done(2) == 0)
    % MTrackerDriver('highLevelControl',[0.2; 0.2; 0.01; 0;1;0; 2]);
    % done(2) = 1;
-   % else
+   else
     MTrackerDriver('highLevelControl',[0.5; 0.5; 0.01; 0;0;0; 0]);
-   % end
+   end
     
     if (done(4) == 0  )
-         MTrackerDriver('highLevelControl',[0.8; 0.9; -0.4; 1;1;1; 0]);
+         MTrackerDriver('highLevelControl',[-0.8; -0.9; 3.14/2; 1;0;2; 0]);
          done(4) = 1;
     end
-    %if (done(3) == 0  )
-    %     MTrackerDriver('highLevelControl',[1.1; 1.2; -0.4; 1;0;2; 0]);
-    %     done(3) = 1;
-    %end
+    if (done(3) == 0  )
+         MTrackerDriver('highLevelControl',[1.1; 1.2; -0.4; 1;0;2; 0]);
+         done(3) = 1;
+    end
     %{
     if (done(5) == 0  && tau > 3 )
          MTrackerDriver('highLevelControl',[-0.3; -0.2; -0.4; 1;1;0; 0]);

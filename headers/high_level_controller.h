@@ -44,8 +44,8 @@ public:
         eps = 0.5;
         ex0 = 0.0; ey0 = 0.0;
         k=0.2; d=0.1;
-        wr_max = 30.0;
-        wl_max = 30.0;
+        wr_max = 15.0;
+        wl_max = 15.0;
         wr_max_orientation = 2; //tryb orientacji
         wl_max_orientation = 2;
         SlowCoef = 0.5; //tryb slow
@@ -55,6 +55,8 @@ public:
 
     void SetVelocities(float wr, float wl)
     {
+        wr = wr/2.0;  //!!!!!!!!!!!   dzielenie przez 2 w obu linijkach zosta³o wprowadzone dla poprawej realizacji prêdkoœci
+        wl = wl/2.0;  //!!!!!!!!!!!   i wykresów. Koniecznoœæ wprowadzenia wynika z nieznanego b³êdu, którego nale¿y doszukaæ siê w innnych plikach
         if(wr>wr_max) wheelsVel.rightWheel = wr_max;
         else if(wr<-wr_max) wheelsVel.rightWheel = -wr_max;
         else wheelsVel.rightWheel = wr;

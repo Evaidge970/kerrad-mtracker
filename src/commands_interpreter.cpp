@@ -493,9 +493,9 @@ void InterpretCommand(uint16_t *inBuf, uint16_t *outBuf)	//buffer - wska�nik n
             InitializeFrameHead(3, 22, outBuf);
 
             Store16bitDataInBuf(dataOut, 0);
-            Store16bitDataInBuf(dataOut, (int16) (-_IQ8(drive.wL)));
+            Store16bitDataInBuf(dataOut, ((int16) (-_IQ8(drive.wL)))*2);   //!!!!!!!!!!!   Mnożenie razy 2 w obu linijkach zostało wprowadzone dla poprawej realizacji prędkości
 
-            Store16bitDataInBuf(dataOut, (int16) (_IQ8(drive.wR)));
+            Store16bitDataInBuf(dataOut, ((int16) (_IQ8(drive.wR)))*2);    //!!!!!!!!!!!   i wykresów. Konieczność wprowadzenia wynika z nieznanego błędu, którego należy doszukać się w innnych plikach
             StoreFloatDataInBuf(dataOut, odometry.posture.x);
             StoreFloatDataInBuf(dataOut, odometry.posture.y);
 

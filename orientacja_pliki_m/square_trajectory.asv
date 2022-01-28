@@ -1,29 +1,34 @@
-function [q,q_z,t,w,Tf,n] = square_trajectory(a,mode,k,V,e,d);
+function [q,q_z,t,w,Tf,n] = square_trajectory(a,mode,k,V);
 % wywo³anie funkcji powoduje narysowanie kwadratu o zadanej g³ugoœci boku przez punkt z
+% funkcjê nae¿y wywo³aæ po zresetowaniu parametrów
 % je¿eli któryœ z parametrów ma zostaæ domyœlny, nale¿y wpisaæ 0
 if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
     return;
 end
 
+Ts = 0.03;
+
 if k == 0
     k = 0.2;
+    k_last = 0;
 end
 if V == 0
     V = 0.1;
-end
-if e == 0
-    e = 0.01;
-end
-if d == 0
-    d = 0.1;
+    V_last = 0;
 end
 
+
+    
+
+
+
 if mode == "const_velocity"
-    Tf = 1.1*4*a/V;
+    Tf = 1.1*4*a/0.1;
 elseif mode == "proportional"
-    Tf = -4*1.2*(log(e / a))/k;
+    Tf = -4*1.2*(log(default_error / a))/default_k;
 end
-Ts = 0.03;
+
+d=0.1;
 n = floor(Tf/Ts)+1;
 
 % Initialization of buffers to store data
@@ -48,25 +53,30 @@ done = zeros(10);
 
 tic;
 disp('Robot is started.');
-%Format komendy jest zamieszczony w pliku MTracker.m
+% Main control loop
+%MTrackerDriver('highLevelControl',[x; y; th; czy zadac nowy punkt; czy wyczyscic bufor kolejki; tryb])
+%czy zadac nowy punkt: 0 - pusta ramka, odczyt; 1 - wyslanie nowego rozkazu
+%czy wyczyscic bufor kolejki: 0 - dodac rozkaz do kolejki; 1 - przerwac wykonanie zadania i wykonac od razu wyslany rozkaz
+%tryb: 0 - pozycja; 1 - orientacja; 2 - algorytm XYZ; 3 - algorytm ABC
+%MTrackerDriver('highLevelControl',[-1.1; 1.3; 0.0; 1;1;1]); 
 while (tau < Tf)
     
     i = i+1;
     tau = toc;
     if (done(1) == 0 )
-    MTrackerDriver('highLevelControl',[k; d; e; 0;1;0; 2]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
+    MTrackerDriver('highLevelControl',[k; 0.1; 0.01; 0;1;0; 2]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
     done(1) = 1;
     elseif (done(2) == 0 )
-    MTrackerDriver('highLevelControl',[V; 0.5; e; 0;1;0; 3]);
+    MTrackerDriver('highLevelControl',[V; 0.5; 0.01; 0;1;0; 3]);
     done(2) = 1;
     else
     MTrackerDriver('highLevelControl',[0.0; 0.0; 0.0; 0;0;0;0]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
-    end
-if (mode == "proportional")
+ if (mode == "proportional")
     if (  done(3) == 0)
         MTrackerDriver('highLevelControl',[a+d; 0.0; 0.0; 1;0;0;0]);
         done(3) = 1;
     end
+
     if (  done(4) == 0)
         MTrackerDriver('highLevelControl',[a+d; a; 0.0; 1;0;0;0]);
         done(4) = 1;
@@ -122,12 +132,16 @@ end
 
 MTrackerDriver('close');
 q_z = ones(3,n);
-for l=1:n
-    q_z(1,l) = q(1,l)+d*cos(q(3,l));
-    q_z(2,l) = q(2,l)+d*sin(q(3,l));
-    q_z(3,l) = q(3,l);
+for i=1:n
+    q_z(1,i) = q(1,i)+d*cos(q(3,i));
+    q_z(2,i) = q(2,i)+d*sin(q(3,i));
+    q_z(3,i) = q(3,i);
 end
 
+% Adjust buffers
+t = t(:, 1:i);
+w = w(:, 1:i);
+q = q(:, 1:i);
 
 disp('Robot is stopped.');
 end
