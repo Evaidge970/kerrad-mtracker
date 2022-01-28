@@ -128,6 +128,12 @@ for l=1:n
     q_z(3,l) = q(3,l);
 end
 
+t = t(:, 1:i);
+w = w(:, 1:i);
+q = q(:, 1:i);
+q_z = q_z(:, 1:i);
+
+
 
 disp('Robot is stopped.');
 end

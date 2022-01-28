@@ -110,6 +110,22 @@ public:
                 wr_max = y;
                 error_position = th;
             }
+            case 6:
+            {
+                error_position = 0.01;
+                                error_orientation = 0.02;
+                            V_const = 0.1; //predkosc ruchu w trybie CONST_VEL
+                                eps = 0.5;
+                            k=0.2;
+                            d=0.1;
+                                wr_max = 15.0;
+                                wl_max = 15.0;
+                                wr_max_orientation = 2; //tryb orientacji
+                                wl_max_orientation = 2;
+                                SlowCoef = 0.5; //tryb slow
+                                SlowThreshold = 0.1;
+            }
+
 	    case 7:
 		{
 			error_position = 0.01;
@@ -118,8 +134,8 @@ public:
         		eps = 0.5;
 			k=0.2;
 			d=0.1;
-        		wr_max = 30.0;
-        		wl_max = 30.0;
+        		wr_max = 15.0;
+        		wl_max = 15.0;
         		wr_max_orientation = 2; //tryb orientacji
         		wl_max_orientation = 2;
         		SlowCoef = 0.5; //tryb slow
@@ -240,10 +256,19 @@ public:
                     isRunning = false;
                     this->Stop();
                 } else {
-                    v_ax = ex0/(sqrt(ex0*ex0 + ey0*ey0));
+
+            v_ax = ex0/(sqrt(ex0*ex0 + ey0*ey0));
 		    v_ay = ey0/(sqrt(ex0*ex0 + ey0*ey0));
+		    if(-k*ey + eps*v_ay == 0 && -k*ex + eps*v_ax == 0)
+		    {
+		        w_x = v_ax/(sqrt(v_ax*v_ax + v_ay*v_ay));
+		        w_y = v_ay/(sqrt(v_ax*v_ax + v_ay*v_ay));
+		    }
+		    else
+		    {
 		    w_x = -((-k*ex + eps*v_ax)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
 		    w_y = -((-k*ey + eps*v_ay)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
+		    }
                     v = cos(odometry.posture.th)*w_x + sin(odometry.posture.th)*w_y;
                     w = -sin(odometry.posture.th)*w_x/d + cos(odometry.posture.th)*w_y/d;
                     this->SetVelocities((v+0.5*WHEEL_BASE*w)/WHEEL_RADIUS, -(v-0.5*WHEEL_BASE*w)/WHEEL_RADIUS);   //pamietaj o minusie przy lewym kole

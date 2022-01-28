@@ -75,13 +75,11 @@ while (tau < Tf)
    end
     
     if (done(4) == 0  )
-         MTrackerDriver('highLevelControl',[-0.8; -0.9; 3.14/2; 1;0;2; 0]);
+         MTrackerDriver('highLevelControl',[0.8; 0.9; 3.14/2; 1;0;2; 0]);
          done(4) = 1;
     end
-    if (done(3) == 0  )
-         MTrackerDriver('highLevelControl',[1.1; 1.2; -0.4; 1;0;2; 0]);
-         done(3) = 1;
-    end
+    
+    
     %{
     if (done(5) == 0  && tau > 3 )
          MTrackerDriver('highLevelControl',[-0.3; -0.2; -0.4; 1;1;0; 0]);
