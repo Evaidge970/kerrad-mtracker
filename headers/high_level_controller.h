@@ -57,6 +57,8 @@ public:
     {
         wr = wr/2.0;  //!!!!!!!!!!!   dzielenie przez 2 w obu linijkach zosta³o wprowadzone dla poprawej realizacji prêdkoœci
         wl = wl/2.0;  //!!!!!!!!!!!   i wykresów. Koniecznoœæ wprowadzenia wynika z nieznanego b³êdu, którego nale¿y doszukaæ siê w innnych plikach
+                      //!!!!!!!!!!!   Prawdopodbnie nale¿y usun¹æ wywo³anie drive.Update() w PeriodUpdate() (plik app.h), rozwi¹zuje to problem dzielenia przez 2;
+                      //              Nie rozwi¹zuje to jednak problemu mno¿enia prêdkoœci wysy³¹nej (comands_interpreter.cpp), ponadto po takiej zmianie pojawiaj¹ siê szpilki w wykresach prêdkoœci kó³
         if(wr>wr_max) wheelsVel.rightWheel = wr_max;
         else if(wr<-wr_max) wheelsVel.rightWheel = -wr_max;
         else wheelsVel.rightWheel = wr;
