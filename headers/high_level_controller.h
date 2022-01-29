@@ -70,8 +70,8 @@ public:
 	
     void SetErrorConstVelMode() //powinno byc wywolane tylko raz na jeden rozkaz
     {
-        ex0 = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
-        ey0 = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
+        ex0 = -(odometry.posture.x + d*cos(odometry.posture.th)) + targetPos.x;
+        ey0 = -(odometry.posture.y + d*sin(odometry.posture.th)) + targetPos.y;
     }
 
     void SetParameters(unsigned int parChoice, float x, float y, float th)
@@ -268,8 +268,8 @@ public:
 		    }
 		    else
 		    {
-		    w_x = -((-k*ex + eps*v_ax)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
-		    w_y = -((-k*ey + eps*v_ay)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
+		    w_x = ((-k*ex + eps*v_ax)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
+		    w_y = ((-k*ey + eps*v_ay)*V_const/(sqrt((-k*ex + eps*v_ax)*(-k*ex + eps*v_ax) + (-k*ey + eps*v_ay)*(-k*ey + eps*v_ay))));
 		    }
                     v = cos(odometry.posture.th)*w_x + sin(odometry.posture.th)*w_y;
                     w = -sin(odometry.posture.th)*w_x/d + cos(odometry.posture.th)*w_y/d;

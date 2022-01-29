@@ -1,7 +1,7 @@
 function [q,q_z,t,w,Tf,n] = square_trajectory(a,mode,k,V,e,d);
-% wywo³anie funkcji powoduje narysowanie kwadratu o zadanej g³ugoœci boku przez punkt z
-% je¿eli któryœ z parametrów ma zostaæ domyœlny, nale¿y wpisaæ 0
-if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
+% wywo?anie funkcji powoduje narysowanie kwadratu o zadanej g?ugo?ci boku przez punkt z
+% je?eli który? z parametrów ma zosta? domy?lny, nale?y wpisa? 0
+if (MTrackerDriver('open', [4, 921600]) == -1) % bylo 115200
     return;
 end
 
@@ -137,5 +137,3 @@ q_z = q_z(:, 1:i);
 
 disp('Robot is stopped.');
 end
-
- 

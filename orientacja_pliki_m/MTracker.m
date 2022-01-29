@@ -3,11 +3,11 @@
 % (c) KSIS, D. Pazderski 2015
 %*************************************************************************
 
-if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
+if (MTrackerDriver('open', [4, 921600]) == -1) % bylo 115200
     return;
 end
 
-Tf = 30;
+Tf = 70;
 Ts = 0.03;
 d=0.1;
 n = floor(Tf/Ts)+1;
@@ -75,8 +75,30 @@ while (tau < Tf)
    end
     
     if (done(4) == 0  )
-         MTrackerDriver('highLevelControl',[0.8; 0.9; 3.14/2; 1;0;2; 0]);
+         MTrackerDriver('highLevelControl',[-0.8; -0.9; 3.14/2; 1;0;2; 0]);
          done(4) = 1;
+    end
+    
+    if (done(7) == 0  )
+         MTrackerDriver('highLevelControl',[1.2; 1.7; 3.14/2; 1;0;2; 0]);
+         done(7) = 1;
+    end
+    if (done(5) == 0  )
+         MTrackerDriver('highLevelControl',[-1.2; 1.4; 3.14/2; 1;0;2; 0]);
+         done(5) = 1;
+    end
+    %{
+    if (done(8) == 0  )
+         MTrackerDriver('highLevelControl',[-1.2; 1.7; 3.14/2; 1;0;3; 0]);
+         done(8) = 1;
+    end
+    if (done(6) == 0  )
+         MTrackerDriver('highLevelControl',[0.2; -0.7; 3.14/2; 1;0;2; 0]);
+         done(6) = 1;
+    end
+    if (done(9) == 0  )
+         MTrackerDriver('highLevelControl',[-1.2; 1.7; 3.14/2; 1;0;3; 0]);
+         done(9) = 1;
     end
     
     
@@ -97,6 +119,7 @@ while (tau < Tf)
          MTrackerDriver('highLevelControl',[-1.1; -1.2; -0.4; 1;0;2; 0]);
          done(7) = 1;
     end
+    %}
     
     %}
     %{

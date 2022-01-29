@@ -1,4 +1,0 @@
-dw = zeros(n)
-for 1:n
-    dw(1,n) = w(1,n)*
-    
