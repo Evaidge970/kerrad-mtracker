@@ -7,7 +7,7 @@ if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
     return;
 end
 
-Tf = 70;
+Tf = 10;
 Ts = 0.03;
 d=0.1;
 n = floor(Tf/Ts)+1;
@@ -65,7 +65,7 @@ while (tau < Tf)
 
     
    if (done(1) == 0)
-   MTrackerDriver('highLevelControl',[2; 2; 0.005; 0;1;0; 7]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
+   MTrackerDriver('highLevelControl',[2; 2; 0.005; 0;1;0; 1]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
    done(1) = 1;
    % elseif (done(2) == 0)
    % MTrackerDriver('highLevelControl',[0.2; 0.2; 0.01; 0;1;0; 2]);

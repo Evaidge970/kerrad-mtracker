@@ -70,8 +70,8 @@ public:
 	
     void SetErrorConstVelMode() //powinno byc wywolane tylko raz na jeden rozkaz
     {
-        ex0 = -(odometry.posture.x + d*cos(odometry.posture.th)) + targetPos.x;
-        ey0 = -(odometry.posture.y + d*sin(odometry.posture.th)) + targetPos.y;
+        ex0 = (odometry.posture.x + d*cos(odometry.posture.th)) - targetPos.x;
+        ey0 = (odometry.posture.y + d*sin(odometry.posture.th)) - targetPos.y;
     }
 
     void SetParameters(unsigned int parChoice, float x, float y, float th)
@@ -253,18 +253,18 @@ public:
             {
 		ex = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
                 ey = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
-                if(abs_float(ex) < error_position && abs_float(ey) < error_position)
-                {
-                    isRunning = false;
-                    this->Stop();
-                } else {
+               // if(abs_float(ex) < error_position && abs_float(ey) < error_position)
+               // {
+               //     isRunning = false;
+               //     this->Stop();
+               // } else {
 
-            v_ax = ex0/(sqrt(ex0*ex0 + ey0*ey0));
-		    v_ay = ey0/(sqrt(ex0*ex0 + ey0*ey0));
+            v_ax = -ex0/(sqrt(ex0*ex0 + ey0*ey0));
+		    v_ay = -ey0/(sqrt(ex0*ex0 + ey0*ey0));
 		    if(-k*ey + eps*v_ay == 0 && -k*ex + eps*v_ax == 0)
 		    {
-		        w_x = v_ax/(sqrt(v_ax*v_ax + v_ay*v_ay));
-		        w_y = v_ay/(sqrt(v_ax*v_ax + v_ay*v_ay));
+		        w_x = -v_ax/(sqrt(v_ax*v_ax + v_ay*v_ay));
+		        w_y = -v_ay/(sqrt(v_ax*v_ax + v_ay*v_ay));
 		    }
 		    else
 		    {
@@ -274,7 +274,7 @@ public:
                     v = cos(odometry.posture.th)*w_x + sin(odometry.posture.th)*w_y;
                     w = -sin(odometry.posture.th)*w_x/d + cos(odometry.posture.th)*w_y/d;
                     this->SetVelocities((v+0.5*WHEEL_BASE*w)/WHEEL_RADIUS, -(v-0.5*WHEEL_BASE*w)/WHEEL_RADIUS);   //pamietaj o minusie przy lewym kole
-                }
+              //  }
             }
         }
 
