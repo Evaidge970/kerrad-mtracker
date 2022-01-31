@@ -3,11 +3,11 @@
 % (c) KSIS, D. Pazderski 2015
 %*************************************************************************
 
-if (MTrackerDriver('open', [3, 921600]) == -1) % bylo 115200
+if (MTrackerDriver('open', [4, 921600]) == -1) % bylo 115200
     return;
 end
 
-Tf = 70;
+Tf = 25;
 Ts = 0.03;
 d=0.1;
 n = floor(Tf/Ts)+1;
@@ -64,29 +64,29 @@ while (tau < Tf)
     tau = toc;
 
     
-   if (done(1) == 0)
-   MTrackerDriver('highLevelControl',[2; 2; 0.005; 0;1;0; 7]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
-   done(1) = 1;
-   % elseif (done(2) == 0)
-   % MTrackerDriver('highLevelControl',[0.2; 0.2; 0.01; 0;1;0; 2]);
-   % done(2) = 1;
-   else
+    if (done(1) == 0)
+    MTrackerDriver('highLevelControl',[0.2; 0.1; 0.01; 0;1;0; 2]); %x, y, th, zadanie punktu (jesli 0 to wysylamy pusta ramke)
+    done(1) = 1;
+    elseif (done(2) == 0)
+    MTrackerDriver('highLevelControl',[0.1; 0.5; 0.01; 0;1;0; 7]);
+    done(2) = 1;
+    else
     MTrackerDriver('highLevelControl',[0.5; 0.5; 0.01; 0;0;0; 0]);
-   end
+    end
     
     if (done(4) == 0  )
-         MTrackerDriver('highLevelControl',[-0.8; -0.9; 0.8; 1;0;2; 0]);
+         MTrackerDriver('highLevelControl',[0.5; 0.8; 0.8; 1;0;2; 0]);
          done(4) = 1;
     end
-    
-    if (done(7) == 0  )
-         MTrackerDriver('highLevelControl',[1.2; 1.7; 3.14/2; 1;0;2; 0]);
+    if (done(7) == 0 && tau > 15 )
+         MTrackerDriver('highLevelControl',[0.7; 0.9; 3.14/2; 1;1;3; 0]);
          done(7) = 1;
     end
-    if (done(5) == 0  )
-         MTrackerDriver('highLevelControl',[-1.2; 1.4; 3.14/2; 1;0;2; 0]);
-         done(5) = 1;
-    end
+   % if (done(5) == 0 && tau > 5 )
+   %      MTrackerDriver('highLevelControl',[-0.3; 0.6; 3.14/2; 1;0;0; 0]);
+   %      done(5) = 1;
+   % end
+    %}
     %{
     
     if (done(8) == 0  )

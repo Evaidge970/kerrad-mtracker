@@ -55,16 +55,16 @@ public:
 
     void SetVelocities(float wr, float wl)
     {
-        wr = wr/2.0;  //!!!!!!!!!!!   dzielenie przez 2 w obu linijkach zosta³o wprowadzone dla poprawej realizacji prêdkoœci
-        wl = wl/2.0;  //!!!!!!!!!!!   i wykresów. Koniecznoœæ wprowadzenia wynika z nieznanego b³êdu, którego nale¿y doszukaæ siê w innnych plikach
+          //!!!!!!!!!!!   dzielenie przez 2 w obu warunkach poni¿ej zosta³o wprowadzone dla poprawej realizacji prêdkoœci
+          //!!!!!!!!!!!   i wykresów. Koniecznoœæ wprowadzenia wynika z nieznanego b³êdu, którego nale¿y doszukaæ siê w innnych plikach
                       //!!!!!!!!!!!   Prawdopodbnie nale¿y usun¹æ wywo³anie drive.Update() w PeriodUpdate() (plik app.h), rozwi¹zuje to problem dzielenia przez 2;
                       //              Nie rozwi¹zuje to jednak problemu mno¿enia prêdkoœci wysy³¹nej (comands_interpreter.cpp), ponadto po takiej zmianie pojawiaj¹ siê szpilki w wykresach prêdkoœci kó³
-        if(wr>wr_max) wheelsVel.rightWheel = wr_max;
-        else if(wr<-wr_max) wheelsVel.rightWheel = -wr_max;
-        else wheelsVel.rightWheel = wr;
-        if(wl>wl_max) wheelsVel.leftWheel = wl_max;
-        else if(wl<-wl_max) wheelsVel.leftWheel = -wl_max;
-        else wheelsVel.leftWheel = wl;
+        if(wr>wr_max) wheelsVel.rightWheel = wr_max/2.0;
+        else if(wr<-wr_max) wheelsVel.rightWheel = -wr_max/2.0;
+        else wheelsVel.rightWheel = wr/2.0;
+        if(wl>wl_max) wheelsVel.leftWheel = wl_max/2.0;
+        else if(wl<-wl_max) wheelsVel.leftWheel = -wl_max/2.0;
+        else wheelsVel.leftWheel = wl/2.0;
         isTriggered = true;
     }
 	
@@ -253,11 +253,11 @@ public:
             {
 		ex = odometry.posture.x + d*cos(odometry.posture.th) - targetPos.x;
                 ey = odometry.posture.y + d*sin(odometry.posture.th) - targetPos.y;
-               // if(abs_float(ex) < error_position && abs_float(ey) < error_position)
-               // {
-               //     isRunning = false;
-               //     this->Stop();
-               // } else {
+                if(abs_float(ex) < error_position && abs_float(ey) < error_position)
+                {
+                     isRunning = false;
+                     this->Stop();
+                } else {
 
             v_ax = -ex0/(sqrt(ex0*ex0 + ey0*ey0));
 		    v_ay = -ey0/(sqrt(ex0*ex0 + ey0*ey0));
@@ -274,7 +274,7 @@ public:
                     v = cos(odometry.posture.th)*w_x + sin(odometry.posture.th)*w_y;
                     w = -sin(odometry.posture.th)*w_x/d + cos(odometry.posture.th)*w_y/d;
                     this->SetVelocities((v+0.5*WHEEL_BASE*w)/WHEEL_RADIUS, -(v-0.5*WHEEL_BASE*w)/WHEEL_RADIUS);   //pamietaj o minusie przy lewym kole
-              //  }
+              }
             }
         }
 
